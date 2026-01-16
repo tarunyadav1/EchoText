@@ -1,0 +1,28 @@
+# Build output
+build-output/
+build/
+DerivedData/
+
+# Logs
+logs/
+*.log
+
+# Xcode
+*.xcuserstate
+*.xcscmblueprint
+xcuserdata/
+
+# macOS
+.DS_Store
+*.swp
+*~
+
+# CocoaPods
+Pods/
+
+# Carthage
+Carthage/Build/
+
+# Swift Package Manager
+.build/
+.swiftpm/

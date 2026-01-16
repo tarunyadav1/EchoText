@@ -1,0 +1,700 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		/* App */
+		APP001 /* EchoTextApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC001; };
+		APP002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC002; };
+		APP003 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC003; };
+
+		/* Models */
+		MDL001 /* RecordingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC010; };
+		MDL002 /* RecordingMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC011; };
+		MDL003 /* WhisperModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC012; };
+		MDL004 /* TranscriptionResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC013; };
+		MDL005 /* SupportedLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC014; };
+		MDL006 /* ExportFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC015; };
+		MDL007 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC016; };
+
+		/* Services */
+		SVC001 /* AudioRecordingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC020; };
+		SVC002 /* WhisperService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC021; };
+		SVC003 /* VoiceActivityDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC022; };
+		SVC004 /* HotkeyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC023; };
+		SVC005 /* TextInsertionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC024; };
+		SVC006 /* PermissionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC025; };
+		SVC007 /* ModelDownloadService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC026; };
+		SVC008 /* ExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC027; };
+
+		/* ViewModels */
+		VM001 /* DictationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC030; };
+		VM002 /* FileTranscriptionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC031; };
+		VM003 /* ModelManagerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC032; };
+		VM004 /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC033; };
+
+		/* Views - Main */
+		VW001 /* MainWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC040; };
+		VW002 /* DictationTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC041; };
+		VW003 /* FileTranscriptionTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC042; };
+
+		/* Views - Floating */
+		VW010 /* FloatingRecordingWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC050; };
+		VW011 /* WaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC051; };
+
+		/* Views - MenuBar */
+		VW020 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC060; };
+		VW021 /* StatusIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC061; };
+
+		/* Views - Settings */
+		VW030 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC070; };
+		VW031 /* GeneralSettingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC071; };
+		VW032 /* ModelSettingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC072; };
+		VW033 /* LanguageSettingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC073; };
+
+		/* Views - Onboarding */
+		VW040 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC080; };
+		VW041 /* PermissionsStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC081; };
+		VW042 /* ModelDownloadStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC082; };
+		VW043 /* ShortcutStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC083; };
+
+		/* Views - Components */
+		VW050 /* DropZoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC090; };
+		VW051 /* ModelCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC091; };
+		VW052 /* ProgressOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC092; };
+
+		/* Utilities */
+		UTL001 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC100; };
+		UTL002 /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC101; };
+		UTL003 /* NSWindow+Floating.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC102; };
+
+		/* Resources */
+		RES001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = RES010; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		/* Product */
+		PROD01 /* EchoText.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EchoText.app; sourceTree = BUILT_PRODUCTS_DIR; };
+
+		/* App */
+		SRC001 /* EchoTextApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EchoTextApp.swift; sourceTree = "<group>"; };
+		SRC002 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		SRC003 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+
+		/* Models */
+		SRC010 /* RecordingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingState.swift; sourceTree = "<group>"; };
+		SRC011 /* RecordingMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingMode.swift; sourceTree = "<group>"; };
+		SRC012 /* WhisperModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhisperModel.swift; sourceTree = "<group>"; };
+		SRC013 /* TranscriptionResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionResult.swift; sourceTree = "<group>"; };
+		SRC014 /* SupportedLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportedLanguage.swift; sourceTree = "<group>"; };
+		SRC015 /* ExportFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportFormat.swift; sourceTree = "<group>"; };
+		SRC016 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+
+		/* Services */
+		SRC020 /* AudioRecordingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecordingService.swift; sourceTree = "<group>"; };
+		SRC021 /* WhisperService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhisperService.swift; sourceTree = "<group>"; };
+		SRC022 /* VoiceActivityDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceActivityDetector.swift; sourceTree = "<group>"; };
+		SRC023 /* HotkeyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyService.swift; sourceTree = "<group>"; };
+		SRC024 /* TextInsertionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextInsertionService.swift; sourceTree = "<group>"; };
+		SRC025 /* PermissionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionService.swift; sourceTree = "<group>"; };
+		SRC026 /* ModelDownloadService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelDownloadService.swift; sourceTree = "<group>"; };
+		SRC027 /* ExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportService.swift; sourceTree = "<group>"; };
+
+		/* ViewModels */
+		SRC030 /* DictationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictationViewModel.swift; sourceTree = "<group>"; };
+		SRC031 /* FileTranscriptionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTranscriptionViewModel.swift; sourceTree = "<group>"; };
+		SRC032 /* ModelManagerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelManagerViewModel.swift; sourceTree = "<group>"; };
+		SRC033 /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
+
+		/* Views - Main */
+		SRC040 /* MainWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindow.swift; sourceTree = "<group>"; };
+		SRC041 /* DictationTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictationTab.swift; sourceTree = "<group>"; };
+		SRC042 /* FileTranscriptionTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTranscriptionTab.swift; sourceTree = "<group>"; };
+
+		/* Views - Floating */
+		SRC050 /* FloatingRecordingWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingRecordingWindow.swift; sourceTree = "<group>"; };
+		SRC051 /* WaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformView.swift; sourceTree = "<group>"; };
+
+		/* Views - MenuBar */
+		SRC060 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
+		SRC061 /* StatusIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusIndicator.swift; sourceTree = "<group>"; };
+
+		/* Views - Settings */
+		SRC070 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		SRC071 /* GeneralSettingsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingsTab.swift; sourceTree = "<group>"; };
+		SRC072 /* ModelSettingsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelSettingsTab.swift; sourceTree = "<group>"; };
+		SRC073 /* LanguageSettingsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageSettingsTab.swift; sourceTree = "<group>"; };
+
+		/* Views - Onboarding */
+		SRC080 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		SRC081 /* PermissionsStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsStep.swift; sourceTree = "<group>"; };
+		SRC082 /* ModelDownloadStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelDownloadStep.swift; sourceTree = "<group>"; };
+		SRC083 /* ShortcutStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutStep.swift; sourceTree = "<group>"; };
+
+		/* Views - Components */
+		SRC090 /* DropZoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropZoneView.swift; sourceTree = "<group>"; };
+		SRC091 /* ModelCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelCard.swift; sourceTree = "<group>"; };
+		SRC092 /* ProgressOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressOverlay.swift; sourceTree = "<group>"; };
+
+		/* Utilities */
+		SRC100 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		SRC101 /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
+		SRC102 /* NSWindow+Floating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSWindow+Floating.swift"; sourceTree = "<group>"; };
+
+		/* Resources */
+		RES010 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		RES011 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FRM001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		ROOT01 = {
+			isa = PBXGroup;
+			children = (
+				GRP001 /* EchoText */,
+				GRP002 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		GRP001 /* EchoText */ = {
+			isa = PBXGroup;
+			children = (
+				GRP010 /* App */,
+				GRP020 /* Models */,
+				GRP030 /* Services */,
+				GRP040 /* ViewModels */,
+				GRP050 /* Views */,
+				GRP060 /* Utilities */,
+				GRP070 /* Resources */,
+			);
+			path = EchoText;
+			sourceTree = "<group>";
+		};
+		GRP002 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				PROD01 /* EchoText.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		GRP010 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				SRC001 /* EchoTextApp.swift */,
+				SRC002 /* AppDelegate.swift */,
+				SRC003 /* AppState.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		GRP020 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				SRC010 /* RecordingState.swift */,
+				SRC011 /* RecordingMode.swift */,
+				SRC012 /* WhisperModel.swift */,
+				SRC013 /* TranscriptionResult.swift */,
+				SRC014 /* SupportedLanguage.swift */,
+				SRC015 /* ExportFormat.swift */,
+				SRC016 /* AppSettings.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		GRP030 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				SRC020 /* AudioRecordingService.swift */,
+				SRC021 /* WhisperService.swift */,
+				SRC022 /* VoiceActivityDetector.swift */,
+				SRC023 /* HotkeyService.swift */,
+				SRC024 /* TextInsertionService.swift */,
+				SRC025 /* PermissionService.swift */,
+				SRC026 /* ModelDownloadService.swift */,
+				SRC027 /* ExportService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		GRP040 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				SRC030 /* DictationViewModel.swift */,
+				SRC031 /* FileTranscriptionViewModel.swift */,
+				SRC032 /* ModelManagerViewModel.swift */,
+				SRC033 /* OnboardingViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		GRP050 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				GRP051 /* Main */,
+				GRP052 /* Floating */,
+				GRP053 /* MenuBar */,
+				GRP054 /* Settings */,
+				GRP055 /* Onboarding */,
+				GRP056 /* Components */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		GRP051 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				SRC040 /* MainWindow.swift */,
+				SRC041 /* DictationTab.swift */,
+				SRC042 /* FileTranscriptionTab.swift */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
+		GRP052 /* Floating */ = {
+			isa = PBXGroup;
+			children = (
+				SRC050 /* FloatingRecordingWindow.swift */,
+				SRC051 /* WaveformView.swift */,
+			);
+			path = Floating;
+			sourceTree = "<group>";
+		};
+		GRP053 /* MenuBar */ = {
+			isa = PBXGroup;
+			children = (
+				SRC060 /* MenuBarView.swift */,
+				SRC061 /* StatusIndicator.swift */,
+			);
+			path = MenuBar;
+			sourceTree = "<group>";
+		};
+		GRP054 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				SRC070 /* SettingsView.swift */,
+				SRC071 /* GeneralSettingsTab.swift */,
+				SRC072 /* ModelSettingsTab.swift */,
+				SRC073 /* LanguageSettingsTab.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		GRP055 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				SRC080 /* OnboardingView.swift */,
+				SRC081 /* PermissionsStep.swift */,
+				SRC082 /* ModelDownloadStep.swift */,
+				SRC083 /* ShortcutStep.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		GRP056 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				SRC090 /* DropZoneView.swift */,
+				SRC091 /* ModelCard.swift */,
+				SRC092 /* ProgressOverlay.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		GRP060 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				SRC100 /* Constants.swift */,
+				SRC101 /* DesignSystem.swift */,
+				GRP061 /* Extensions */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		GRP061 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				SRC102 /* NSWindow+Floating.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		GRP070 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				RES010 /* Assets.xcassets */,
+				RES011 /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		TGT001 /* EchoText */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CFG002 /* Build configuration list for PBXNativeTarget "EchoText" */;
+			buildPhases = (
+				SRC999 /* Sources */,
+				FRM001 /* Frameworks */,
+				RSC001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EchoText;
+			packageProductDependencies = (
+				PKG001 /* WhisperKit */,
+				PKG002 /* KeyboardShortcuts */,
+			);
+			productName = EchoText;
+			productReference = PROD01 /* EchoText.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		PRJ001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					TGT001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = CFG001 /* Build configuration list for PBXProject "EchoText" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = ROOT01;
+			packageReferences = (
+				PKR001 /* XCRemoteSwiftPackageReference "WhisperKit" */,
+				PKR002 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
+			);
+			productRefGroup = GRP002 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				TGT001 /* EchoText */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		RSC001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				RES001 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		SRC999 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				APP001 /* EchoTextApp.swift in Sources */,
+				APP002 /* AppDelegate.swift in Sources */,
+				APP003 /* AppState.swift in Sources */,
+				MDL001 /* RecordingState.swift in Sources */,
+				MDL002 /* RecordingMode.swift in Sources */,
+				MDL003 /* WhisperModel.swift in Sources */,
+				MDL004 /* TranscriptionResult.swift in Sources */,
+				MDL005 /* SupportedLanguage.swift in Sources */,
+				MDL006 /* ExportFormat.swift in Sources */,
+				MDL007 /* AppSettings.swift in Sources */,
+				SVC001 /* AudioRecordingService.swift in Sources */,
+				SVC002 /* WhisperService.swift in Sources */,
+				SVC003 /* VoiceActivityDetector.swift in Sources */,
+				SVC004 /* HotkeyService.swift in Sources */,
+				SVC005 /* TextInsertionService.swift in Sources */,
+				SVC006 /* PermissionService.swift in Sources */,
+				SVC007 /* ModelDownloadService.swift in Sources */,
+				SVC008 /* ExportService.swift in Sources */,
+				VM001 /* DictationViewModel.swift in Sources */,
+				VM002 /* FileTranscriptionViewModel.swift in Sources */,
+				VM003 /* ModelManagerViewModel.swift in Sources */,
+				VM004 /* OnboardingViewModel.swift in Sources */,
+				VW001 /* MainWindow.swift in Sources */,
+				VW002 /* DictationTab.swift in Sources */,
+				VW003 /* FileTranscriptionTab.swift in Sources */,
+				VW010 /* FloatingRecordingWindow.swift in Sources */,
+				VW011 /* WaveformView.swift in Sources */,
+				VW020 /* MenuBarView.swift in Sources */,
+				VW021 /* StatusIndicator.swift in Sources */,
+				VW030 /* SettingsView.swift in Sources */,
+				VW031 /* GeneralSettingsTab.swift in Sources */,
+				VW032 /* ModelSettingsTab.swift in Sources */,
+				VW033 /* LanguageSettingsTab.swift in Sources */,
+				VW040 /* OnboardingView.swift in Sources */,
+				VW041 /* PermissionsStep.swift in Sources */,
+				VW042 /* ModelDownloadStep.swift in Sources */,
+				VW043 /* ShortcutStep.swift in Sources */,
+				VW050 /* DropZoneView.swift in Sources */,
+				VW051 /* ModelCard.swift in Sources */,
+				VW052 /* ProgressOverlay.swift in Sources */,
+				UTL001 /* Constants.swift in Sources */,
+				UTL002 /* DesignSystem.swift in Sources */,
+				UTL003 /* NSWindow+Floating.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		CFG010 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		CFG011 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		CFG020 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = EchoText/Resources/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 EchoText. All rights reserved.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Echo-text needs microphone access to transcribe your voice to text.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.echotext.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		CFG021 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = EchoText/Resources/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 EchoText. All rights reserved.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Echo-text needs microphone access to transcribe your voice to text.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.echotext.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		CFG001 /* Build configuration list for PBXProject "EchoText" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CFG010 /* Debug */,
+				CFG011 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CFG002 /* Build configuration list for PBXNativeTarget "EchoText" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CFG020 /* Debug */,
+				CFG021 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		PKR001 /* XCRemoteSwiftPackageReference "WhisperKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/argmaxinc/WhisperKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.6.0;
+			};
+		};
+		PKR002 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/KeyboardShortcuts";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		PKG001 /* WhisperKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = PKR001 /* XCRemoteSwiftPackageReference "WhisperKit" */;
+			productName = WhisperKit;
+		};
+		PKG002 /* KeyboardShortcuts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = PKR002 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
+			productName = KeyboardShortcuts;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = PRJ001 /* Project object */;
+}
