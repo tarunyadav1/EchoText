@@ -151,13 +151,10 @@ struct ModelOptionCard: View {
                 }
             }
             .padding()
-            .background(
+            .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 12))
+            .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(NSColor.controlBackgroundColor))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 2)
-                    )
+                    .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 2)
             )
         }
         .buttonStyle(.plain)

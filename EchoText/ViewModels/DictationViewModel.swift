@@ -32,16 +32,24 @@ final class DictationViewModel: ObservableObject {
         appState?.handleAction(.cancel)
     }
 
-    /// Copy transcription to clipboard
-    func copyToClipboard() {
+    /// Copy transcription to clipboard as clean text
+    func copyCleanText() {
         guard !transcriptionText.isEmpty else { return }
-
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(transcriptionText, forType: .string)
-
         showCopyConfirmation = true
+        resetCopyConfirmation()
+    }
 
-        // Hide confirmation after 2 seconds
+    /// Copy with timestamps and speakers
+    func copyWithTimestamps() {
+        guard let result = appState?.lastTranscription else { return }
+        ExportService.copyWithTimestamps(result)
+        showCopyConfirmation = true
+        resetCopyConfirmation()
+    }
+
+    private func resetCopyConfirmation() {
         Task {
             try? await Task.sleep(nanoseconds: 2_000_000_000)
             showCopyConfirmation = false

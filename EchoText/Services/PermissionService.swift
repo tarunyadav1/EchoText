@@ -42,6 +42,9 @@ final class PermissionService: ObservableObject {
     @Published private(set) var microphoneStatus: PermissionStatus = .notDetermined
     @Published private(set) var accessibilityStatus: PermissionStatus = .notDetermined
 
+    // MARK: - Private Properties
+    private var accessibilityCheckTimer: Timer?
+
     // MARK: - Computed Properties
     var allPermissionsGranted: Bool {
         microphoneStatus.isGranted && accessibilityStatus.isGranted
@@ -54,6 +57,24 @@ final class PermissionService: ObservableObject {
     // MARK: - Initialization
     init() {
         checkAllPermissions()
+        startAccessibilityMonitoring()
+    }
+
+    deinit {
+        accessibilityCheckTimer?.invalidate()
+    }
+
+    // MARK: - Accessibility Monitoring
+
+    /// Start periodic monitoring for accessibility permission changes
+    /// This is needed because macOS doesn't notify apps when permission is granted
+    private func startAccessibilityMonitoring() {
+        // Check every 2 seconds if accessibility status has changed
+        accessibilityCheckTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { [weak self] _ in
+            Task { @MainActor in
+                self?.checkAccessibilityPermission()
+            }
+        }
     }
 
     // MARK: - Public Methods
@@ -119,7 +140,9 @@ final class PermissionService: ObservableObject {
     }
 
     private func checkAccessibilityPermission() {
-        accessibilityStatus = AXIsProcessTrusted() ? .granted : .denied
+        let isTrusted = AXIsProcessTrusted()
+        NSLog("[PermissionService] AXIsProcessTrusted() = %@", isTrusted ? "true" : "false")
+        accessibilityStatus = isTrusted ? .granted : .denied
     }
 }
 

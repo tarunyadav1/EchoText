@@ -26,9 +26,9 @@ struct StatusIndicator: View {
         case .idle:
             return .primary
         case .recording:
-            return .red
+            return Color(hex: "F9564F") // Tart Orange
         case .processing:
-            return .orange
+            return Color(hex: "F3C677") // Gold Crayola
         }
     }
 
@@ -37,9 +37,9 @@ struct StatusIndicator: View {
         case .idle:
             return .secondary
         case .recording:
-            return .red.opacity(0.5)
+            return Color(hex: "B33F62") // Irresistible
         case .processing:
-            return .orange.opacity(0.5)
+            return Color(hex: "F3C677").opacity(0.5)
         }
     }
 }
@@ -57,7 +57,7 @@ struct AnimatedStatusIndicator: View {
             // Pulsing overlay for recording
             if state == .recording {
                 Circle()
-                    .fill(Color.red)
+                    .fill(Color(hex: "F9564F")) // Tart Orange
                     .frame(width: 6, height: 6)
                     .offset(x: 6, y: -6)
                     .scaleEffect(isAnimating ? 1.2 : 1.0)

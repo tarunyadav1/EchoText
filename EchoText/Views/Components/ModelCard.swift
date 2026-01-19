@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Card view for displaying a Whisper model
+/// Native Liquid Glass card view for displaying a Whisper model (macOS 26+)
 struct ModelCard: View {
     let model: WhisperModel
     let isSelected: Bool
@@ -13,7 +13,7 @@ struct ModelCard: View {
 
     var body: some View {
         HStack(spacing: DesignSystem.Spacing.md) {
-            // Model icon
+            // Model icon with Liquid Glass
             modelIcon
 
             // Model info
@@ -27,9 +27,8 @@ struct ModelCard: View {
                             .font(.caption2)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
-                            .background(Color.green.opacity(0.2))
+                            .glassEffect(.regular.tint(.green.opacity(0.3)), in: RoundedRectangle(cornerRadius: 4))
                             .foregroundColor(.green)
-                            .cornerRadius(4)
                     }
                 }
 
@@ -60,28 +59,22 @@ struct ModelCard: View {
             actionButton
         }
         .padding(DesignSystem.Spacing.md)
-        .background(
-            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large)
-                .fill(DesignSystem.Colors.controlBackground)
-                .overlay(
-                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large)
-                        .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 2)
-                )
+        .glassEffect(
+            isSelected
+                ? .regular.tint(.accentColor.opacity(0.15))
+                : .regular,
+            in: RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large)
         )
     }
 
     // MARK: - Subviews
 
     private var modelIcon: some View {
-        ZStack {
-            Circle()
-                .fill(iconBackgroundColor)
-                .frame(width: 48, height: 48)
-
-            Image(systemName: iconName)
-                .font(.title2)
-                .foregroundColor(iconColor)
-        }
+        Image(systemName: iconName)
+            .font(.title2)
+            .foregroundColor(iconColor)
+            .frame(width: 48, height: 48)
+            .glassEffect(.regular.tint(iconBackgroundColor).interactive(), in: .circle)
     }
 
     @ViewBuilder

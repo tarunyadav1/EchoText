@@ -10,25 +10,23 @@ struct EchoTextApp: App {
     }
 
     var body: some Scene {
-        // Main Window - hidden by default, only shown when user opens from menu bar
-        WindowGroup {
+        // Main Window - visible on launch with full app features
+        Window("EchoText", id: "main") {
             MainWindow()
                 .environmentObject(appState)
                 .onAppear {
                     // Connect appState to appDelegate for floating window
                     appDelegate.appState = appState
 
-                    // Hide the main window after connecting appState
-                    // The app runs in menu bar mode - window only shown when requested
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        if !appState.showOnboarding {
-                            // Hide all main windows, keep app as accessory
-                            for window in NSApp.windows {
-                                if window.canBecomeMain && window.isVisible {
-                                    window.orderOut(nil)
-                                }
+                    // Ensure window is visible
+                    DispatchQueue.main.async {
+                        NSApp.setActivationPolicy(.regular)
+                        NSApp.activate(ignoringOtherApps: true)
+                        for window in NSApp.windows {
+                            if window.contentView != nil && !window.className.contains("StatusBar") {
+                                window.makeKeyAndOrderFront(nil)
+                                break
                             }
-                            NSApp.setActivationPolicy(.accessory)
                         }
                     }
                 }

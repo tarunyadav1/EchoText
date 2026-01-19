@@ -27,6 +27,38 @@ enum WhisperServiceError: LocalizedError {
     }
 }
 
+/// Advanced Whisper transcription parameters
+struct WhisperAdvancedOptions {
+    /// Controls randomness in transcription (0.0 = deterministic, 1.0 = max randomness)
+    var temperature: Double = 0.0
+    /// Top-K sampling parameter (higher = more diverse but potentially less accurate)
+    /// Maps to WhisperKit's topK parameter
+    var topK: Int = 5
+    /// Sample length for decoding (higher = longer context window)
+    /// Maps to WhisperKit's sampleLength parameter
+    var sampleLength: Int = 224
+    /// Threshold for detecting silence/no speech (lower = more sensitive)
+    var noSpeechThreshold: Double = 0.6
+    /// Threshold for compression ratio to detect hallucinations
+    var compressionRatioThreshold: Double = 2.4
+
+    /// Create from AppSettings
+    static func from(_ settings: AppSettings) -> WhisperAdvancedOptions {
+        return WhisperAdvancedOptions(
+            temperature: settings.whisperTemperature,
+            topK: settings.whisperBeamSize,  // beamSize maps to topK
+            sampleLength: settings.whisperBestOf * 224,  // bestOf influences sample length
+            noSpeechThreshold: settings.whisperNoSpeechThreshold,
+            compressionRatioThreshold: settings.whisperCompressionRatioThreshold
+        )
+    }
+
+    /// Default options
+    static var `default`: WhisperAdvancedOptions {
+        return WhisperAdvancedOptions()
+    }
+}
+
 /// Service responsible for Whisper-based speech-to-text transcription
 @MainActor
 final class WhisperService: ObservableObject {
@@ -89,7 +121,13 @@ final class WhisperService: ObservableObject {
     // MARK: - Transcription
 
     /// Transcribe audio from a file URL
-    func transcribe(audioURL: URL, language: String? = nil) async throws -> TranscriptionResult {
+    func transcribe(
+        audioURL: URL,
+        language: String? = nil,
+        prompt: String? = nil,
+        removeFillers: Bool = false,
+        advancedOptions: WhisperAdvancedOptions = .default
+    ) async throws -> TranscriptionResult {
         guard let whisperKit = whisperKit, isModelLoaded else {
             throw WhisperServiceError.modelNotLoaded
         }
@@ -108,12 +146,13 @@ final class WhisperService: ObservableObject {
             // Load audio file
             let audioData = try await loadAudioFile(url: audioURL)
 
-            // Configure transcription options
-            var options = DecodingOptions()
-            if let language = language, language != "auto" {
-                options.language = language
-            }
-            options.verbose = false
+            // Configure transcription options with advanced parameters
+            let options = configureDecodingOptions(
+                language: language,
+                prompt: prompt,
+                advancedOptions: advancedOptions,
+                tokenizer: whisperKit.tokenizer
+            )
 
             // Perform transcription
             let results = try await whisperKit.transcribe(
@@ -135,7 +174,7 @@ final class WhisperService: ObservableObject {
             let segments = result.segments.enumerated().map { index, segment in
                 TranscriptionSegment(
                     id: index,
-                    text: segment.text,
+                    text: WhisperService.cleanWhisperTokens(segment.text),
                     startTime: TimeInterval(segment.start),
                     endTime: TimeInterval(segment.end)
                 )
@@ -144,9 +183,20 @@ final class WhisperService: ObservableObject {
             // Calculate audio duration
             let audioDuration = audioData.count > 0 ? Double(audioData.count) / 16000.0 : 0.0
 
+            // Clean the full text from special tokens
+            var cleanedText = WhisperService.cleanWhisperTokens(result.text)
+            var cleanedSegments = segments
+
+            // Apply filler word removal if enabled
+            if removeFillers {
+                let fillerService = FillerWordService.shared
+                cleanedText = fillerService.removeFillers(from: cleanedText)
+                cleanedSegments = segments.map { fillerService.removeFillers(from: $0) }
+            }
+
             return TranscriptionResult(
-                text: result.text.trimmingCharacters(in: .whitespacesAndNewlines),
-                segments: segments,
+                text: cleanedText,
+                segments: cleanedSegments,
                 language: result.language,
                 duration: audioDuration,
                 processingTime: processingTime,
@@ -160,7 +210,13 @@ final class WhisperService: ObservableObject {
     }
 
     /// Transcribe audio from Float array (for real-time recording)
-    func transcribe(audioData: [Float], language: String? = nil) async throws -> TranscriptionResult {
+    func transcribe(
+        audioData: [Float],
+        language: String? = nil,
+        prompt: String? = nil,
+        removeFillers: Bool = false,
+        advancedOptions: WhisperAdvancedOptions = .default
+    ) async throws -> TranscriptionResult {
         guard let whisperKit = whisperKit, isModelLoaded else {
             throw WhisperServiceError.modelNotLoaded
         }
@@ -176,12 +232,13 @@ final class WhisperService: ObservableObject {
         let startTime = Date()
 
         do {
-            // Configure transcription options
-            var options = DecodingOptions()
-            if let language = language, language != "auto" {
-                options.language = language
-            }
-            options.verbose = false
+            // Configure transcription options with advanced parameters
+            let options = configureDecodingOptions(
+                language: language,
+                prompt: prompt,
+                advancedOptions: advancedOptions,
+                tokenizer: whisperKit.tokenizer
+            )
 
             // Perform transcription
             let results = try await whisperKit.transcribe(
@@ -203,7 +260,7 @@ final class WhisperService: ObservableObject {
             let segments = result.segments.enumerated().map { index, segment in
                 TranscriptionSegment(
                     id: index,
-                    text: segment.text,
+                    text: WhisperService.cleanWhisperTokens(segment.text),
                     startTime: TimeInterval(segment.start),
                     endTime: TimeInterval(segment.end)
                 )
@@ -212,9 +269,20 @@ final class WhisperService: ObservableObject {
             // Calculate audio duration
             let audioDuration = audioData.count > 0 ? Double(audioData.count) / 16000.0 : 0.0
 
+            // Clean the full text from special tokens
+            var cleanedText = WhisperService.cleanWhisperTokens(result.text)
+            var cleanedSegments = segments
+
+            // Apply filler word removal if enabled
+            if removeFillers {
+                let fillerService = FillerWordService.shared
+                cleanedText = fillerService.removeFillers(from: cleanedText)
+                cleanedSegments = segments.map { fillerService.removeFillers(from: $0) }
+            }
+
             return TranscriptionResult(
-                text: result.text.trimmingCharacters(in: .whitespacesAndNewlines),
-                segments: segments,
+                text: cleanedText,
+                segments: cleanedSegments,
                 language: result.language,
                 duration: audioDuration,
                 processingTime: processingTime,
@@ -235,6 +303,41 @@ final class WhisperService: ObservableObject {
     }
 
     // MARK: - Private Methods
+
+    /// Configure DecodingOptions with language, prompt, and advanced parameters
+    private func configureDecodingOptions(
+        language: String?,
+        prompt: String?,
+        advancedOptions: WhisperAdvancedOptions,
+        tokenizer: (any WhisperTokenizer)?
+    ) -> DecodingOptions {
+        var options = DecodingOptions()
+
+        // Language setting
+        if let language = language, language != "auto" {
+            options.language = language
+        }
+
+        // Prompt tokens
+        if let prompt = prompt, !prompt.isEmpty, let tokenizer = tokenizer {
+            let tokens = tokenizer.encode(text: " " + prompt.trimmingCharacters(in: .whitespaces))
+            options.promptTokens = tokens.filter { $0 < tokenizer.specialTokens.specialTokenBegin }
+            options.usePrefillPrompt = true
+        }
+
+        // Advanced parameters - using WhisperKit's actual DecodingOptions properties
+        options.temperature = Float(advancedOptions.temperature)
+        options.temperatureFallbackCount = advancedOptions.temperature > 0 ? 5 : 0
+        options.topK = advancedOptions.topK
+        options.sampleLength = advancedOptions.sampleLength
+        options.noSpeechThreshold = Float(advancedOptions.noSpeechThreshold)
+        options.compressionRatioThreshold = Float(advancedOptions.compressionRatioThreshold)
+
+        // Standard settings
+        options.verbose = false
+
+        return options
+    }
 
     private func extractModelName(from modelId: String) -> String {
         // Convert model ID to WhisperKit model name
@@ -332,6 +435,57 @@ final class WhisperService: ObservableObject {
     }
 }
 
+// MARK: - Diarization Integration
+extension WhisperService {
+    /// Transcribe audio with speaker diarization
+    func transcribeWithDiarization(
+        audioURL: URL,
+        language: String? = nil,
+        diarizationService: SpeakerDiarizationService,
+        removeFillers: Bool = false,
+        advancedOptions: WhisperAdvancedOptions = .default
+    ) async throws -> TranscriptionResult {
+        // First, perform transcription
+        var result = try await transcribe(
+            audioURL: audioURL,
+            language: language,
+            removeFillers: removeFillers,
+            advancedOptions: advancedOptions
+        )
+
+        // Then, perform diarization
+        let diarizationSegments = try await diarizationService.diarize(audioURL: audioURL)
+
+        // Align transcription segments with diarization
+        let alignedSegments = diarizationService.alignSegments(
+            transcriptionSegments: result.segments,
+            diarizationSegments: diarizationSegments
+        )
+
+        // Create speaker mapping
+        let speakerIds = alignedSegments.compactMap { $0.speakerId }
+        let speakerMapping = SpeakerMapping.create(from: speakerIds)
+
+        // Update segments with speaker IDs
+        let segmentsWithSpeakers = alignedSegments.map { aligned in
+            aligned.segment.withSpeaker(aligned.speakerId)
+        }
+
+        // Create new result with speaker information
+        return TranscriptionResult(
+            id: result.id,
+            text: result.text,
+            segments: segmentsWithSpeakers,
+            language: result.language,
+            duration: result.duration,
+            processingTime: result.processingTime,
+            modelUsed: result.modelUsed,
+            timestamp: result.timestamp,
+            speakerMapping: speakerMapping
+        )
+    }
+}
+
 // MARK: - Model Management Extension
 extension WhisperService {
     /// Check if a model is downloaded
@@ -358,5 +512,41 @@ extension WhisperService {
         if loadedModelId == modelId {
             unloadModel()
         }
+    }
+}
+
+// MARK: - Text Cleaning Extension
+extension WhisperService {
+    /// Clean Whisper special tokens from transcription text
+    static func cleanWhisperTokens(_ text: String) -> String {
+        var cleaned = text
+
+        // Remove special tokens like <|startoftranscript|>, <|en|>, <|transcribe|>, <|endoftext|>
+        let specialTokenPatterns = [
+            "<\\|startoftranscript\\|>",
+            "<\\|endoftext\\|>",
+            "<\\|transcribe\\|>",
+            "<\\|translate\\|>",
+            "<\\|notimestamps\\|>",
+            "<\\|[a-z]{2}\\|>",  // Language codes like <|en|>, <|es|>, etc.
+            "<\\|\\d+\\.\\d+\\|>",  // Timestamp tokens like <|0.00|>, <|4.24|>
+        ]
+
+        for pattern in specialTokenPatterns {
+            if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) {
+                cleaned = regex.stringByReplacingMatches(
+                    in: cleaned,
+                    options: [],
+                    range: NSRange(cleaned.startIndex..., in: cleaned),
+                    withTemplate: ""
+                )
+            }
+        }
+
+        // Clean up extra whitespace
+        cleaned = cleaned.replacingOccurrences(of: "  +", with: " ", options: .regularExpression)
+        cleaned = cleaned.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        return cleaned
     }
 }

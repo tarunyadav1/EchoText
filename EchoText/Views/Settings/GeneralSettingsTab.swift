@@ -69,6 +69,68 @@ struct GeneralSettingsTab: View {
                 Toggle("Show menu bar icon", isOn: $appState.settings.showMenuBarIcon)
             }
 
+            Section("Realtime Captions") {
+                Toggle("Show captions overlay during recording", isOn: $appState.settings.captionsSettings.enabled)
+
+                if appState.settings.captionsSettings.enabled {
+                    // Position picker
+                    Picker("Position", selection: $appState.settings.captionsSettings.position) {
+                        ForEach(CaptionsPosition.allCases) { position in
+                            Label(position.displayName, systemImage: position.icon)
+                                .tag(position)
+                        }
+                    }
+                    .pickerStyle(.menu)
+
+                    // Font size
+                    HStack {
+                        Text("Font size")
+                        Spacer()
+                        Text("\(Int(appState.settings.captionsSettings.fontSize))pt")
+                            .foregroundColor(.secondary)
+                    }
+                    Slider(
+                        value: $appState.settings.captionsSettings.fontSize,
+                        in: CaptionsSettings.minFontSize...CaptionsSettings.maxFontSize,
+                        step: 2
+                    )
+
+                    // Background opacity
+                    HStack {
+                        Text("Background opacity")
+                        Spacer()
+                        Text("\(Int(appState.settings.captionsSettings.backgroundOpacity * 100))%")
+                            .foregroundColor(.secondary)
+                    }
+                    Slider(
+                        value: $appState.settings.captionsSettings.backgroundOpacity,
+                        in: 0.3...1.0
+                    )
+
+                    // Text color
+                    Picker("Text color", selection: $appState.settings.captionsSettings.textColorOption) {
+                        ForEach(CaptionsTextColor.allCases) { color in
+                            HStack {
+                                Circle()
+                                    .fill(color.color)
+                                    .frame(width: 12, height: 12)
+                                Text(color.displayName)
+                            }
+                            .tag(color)
+                        }
+                    }
+                    .pickerStyle(.menu)
+
+                    // Max lines
+                    Stepper("Lines to display: \(appState.settings.captionsSettings.maxLines)",
+                            value: $appState.settings.captionsSettings.maxLines,
+                            in: CaptionsSettings.minLines...CaptionsSettings.maxLines)
+
+                    // Animate text
+                    Toggle("Animate new words", isOn: $appState.settings.captionsSettings.animateText)
+                }
+            }
+
             Section("Startup") {
                 Toggle("Launch at login", isOn: $appState.settings.launchAtLogin)
             }

@@ -6,6 +6,7 @@ DerivedData/
 # Logs
 logs/
 *.log
+build_log*.txt
 
 # Xcode
 *.xcuserstate

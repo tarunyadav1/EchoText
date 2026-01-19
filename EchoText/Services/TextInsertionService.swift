@@ -223,8 +223,8 @@ final class TextInsertionService: ObservableObject {
 
     /// Prompt user to enable accessibility access
     func requestAccessibilityAccess() {
-        let options = [kAXTrustedCheckOptionPrompt.takeRetainedValue() as String: true]
-        AXIsProcessTrustedWithOptions(options as CFDictionary)
+        let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary
+        AXIsProcessTrustedWithOptions(options)
     }
 
     // MARK: - Private Methods

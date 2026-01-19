@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Full-screen progress overlay for long operations
+/// Native Liquid Glass full-screen progress overlay (macOS 26+)
 struct ProgressOverlay: View {
     let title: String
     let message: String?
@@ -24,12 +24,13 @@ struct ProgressOverlay: View {
 
     var body: some View {
         ZStack {
-            // Background blur
+            // Liquid Glass background blur
             Rectangle()
-                .fill(.ultraThinMaterial)
+                .fill(.clear)
+                .glassEffect(.clear, in: .rect)
                 .ignoresSafeArea()
 
-            // Content card
+            // Content card with Liquid Glass
             VStack(spacing: DesignSystem.Spacing.lg) {
                 // Spinner or progress
                 if let progress = progress {
@@ -67,20 +68,17 @@ struct ProgressOverlay: View {
                     }
                 }
 
-                // Cancel button
+                // Cancel button with Liquid Glass
                 if let onCancel = onCancel {
                     Button("Cancel") {
                         onCancel()
                     }
-                    .buttonStyle(.bordered)
+                    .buttonStyle(GlassButtonStyle())
                 }
             }
             .padding(DesignSystem.Spacing.xxl)
-            .background(
-                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large)
-                    .fill(DesignSystem.Colors.controlBackground)
-                    .shadow(color: .black.opacity(0.1), radius: 10, y: 5)
-            )
+            .glassEffect(.regular, in: RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large))
+            .shadow(color: .black.opacity(0.1), radius: 10, y: 5)
         }
     }
 }

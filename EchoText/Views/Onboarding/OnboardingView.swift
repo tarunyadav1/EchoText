@@ -1,39 +1,50 @@
 import SwiftUI
 
-/// Main onboarding flow view
+/// Native Liquid Glass onboarding flow view (macOS 26+)
 struct OnboardingView: View {
     @ObservedObject var viewModel: OnboardingViewModel
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Progress indicator
-            HStack(spacing: 8) {
-                ForEach(OnboardingStep.allCases, id: \.self) { step in
-                    RoundedRectangle(cornerRadius: 2)
-                        .fill(step.rawValue <= viewModel.currentStep.rawValue ? Color.accentColor : Color.secondary.opacity(0.3))
-                        .frame(height: 4)
+        ZStack {
+            // Liquid Glass background
+            Color.clear
+                .glassEffect(.clear, in: .rect)
+                .ignoresSafeArea()
+
+            VStack(spacing: 0) {
+                // Progress indicator with Liquid Glass pills
+                GlassEffectContainer {
+                    HStack(spacing: 6) {
+                        ForEach(OnboardingStep.allCases, id: \.self) { step in
+                            Capsule()
+                                .fill(step.rawValue <= viewModel.currentStep.rawValue ? Color.accentColor : Color.secondary.opacity(0.2))
+                                .frame(height: 6)
+                                .animation(.spring(), value: viewModel.currentStep)
+                        }
+                    }
                 }
+                .padding(.horizontal, 40)
+                .padding(.top, 24)
+                .padding(.bottom, 12)
+
+                // Content - scrollable
+                ScrollView {
+                    stepContent(for: viewModel.currentStep)
+                        .frame(maxWidth: .infinity)
+                        .padding(.horizontal, 40)
+                        .padding(.vertical, 32)
+                        .transition(.move(edge: .trailing).combined(with: .opacity))
+                }
+                .frame(maxHeight: .infinity)
+                .animation(.spring(response: 0.5, dampingFraction: 0.8), value: viewModel.currentStep)
+
+                // Navigation buttons with Liquid Glass
+                navigationButtons
+                    .padding(24)
+                    .glassEffect(.regular, in: .rect)
             }
-            .padding(.horizontal, 24)
-            .padding(.top, 16)
-            .padding(.bottom, 8)
-
-            // Content - scrollable
-            ScrollView {
-                stepContent(for: viewModel.currentStep)
-                    .frame(maxWidth: .infinity)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 16)
-            }
-            .frame(maxHeight: .infinity)
-
-            Divider()
-
-            // Navigation buttons
-            navigationButtons
         }
-        .frame(minWidth: 500, minHeight: 500)
-        .background(Color(NSColor.windowBackgroundColor))
+        .frame(minWidth: 600, minHeight: 600)
     }
 
     // MARK: - Step Content
@@ -58,36 +69,39 @@ struct OnboardingView: View {
 
     private var navigationButtons: some View {
         HStack {
-            // Back button
             if !viewModel.isFirstStep {
-                Button("Back") {
+                Button {
                     viewModel.previousStep()
+                } label: {
+                    Text("Back")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.secondary)
                 }
                 .buttonStyle(.plain)
             }
 
             Spacer()
 
-            // Skip button (on some steps)
             if viewModel.currentStep == .modelDownload && viewModel.isModelDownloaded {
                 Button("Skip") {
                     viewModel.nextStep()
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(GlassButtonStyle())
             }
 
-            // Next/Done button
-            Button(viewModel.isLastStep ? "Get Started" : "Continue") {
+            Button {
                 if viewModel.isLastStep {
                     viewModel.completeOnboarding()
                 } else {
                     viewModel.nextStep()
                 }
+            } label: {
+                Text(viewModel.isLastStep ? "Get Started" : "Continue")
+                    .font(.system(size: 14, weight: .bold))
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(PrimaryGradientButtonStyle())
             .disabled(!viewModel.canProceed && !viewModel.isLastStep)
         }
-        .padding()
     }
 }
 
@@ -95,7 +109,8 @@ struct OnboardingView: View {
 
 struct WelcomeStep: View {
     var body: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: 32) {
+            // Hero icon with Liquid Glass
             Image(systemName: "waveform.circle.fill")
                 .font(.system(size: 80))
                 .foregroundStyle(.linearGradient(
@@ -103,42 +118,43 @@ struct WelcomeStep: View {
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 ))
-                .padding(.top, 20)
+                .symbolEffect(.bounce, options: .repeating)
+                .frame(width: 140, height: 140)
+                .glassEffect(.regular.tint(.blue.opacity(0.15)), in: .circle)
 
             VStack(spacing: 12) {
-                Text("Welcome to Echo-text")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
+                Text("Welcome to EchoText")
+                    .font(.system(size: 32, weight: .bold, design: .rounded))
 
-                Text("Fast, accurate voice-to-text transcription that runs entirely on your Mac. No internet required.")
-                    .font(.body)
+                Text("Lightning-fast, accurate transcription that lives on your Mac. Experience the future of dictation.")
+                    .font(.system(size: 16, weight: .medium, design: .rounded))
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: 400)
             }
 
-            // Feature highlights
-            VStack(alignment: .leading, spacing: 16) {
+            // Feature list with Liquid Glass card
+            VStack(alignment: .leading, spacing: 20) {
                 FeatureRow(
                     icon: "lock.shield.fill",
-                    title: "100% Local",
-                    description: "Your voice never leaves your Mac"
+                    title: "Privacy First",
+                    description: "Your voice never leaves your device."
                 )
 
                 FeatureRow(
                     icon: "bolt.fill",
                     title: "Lightning Fast",
-                    description: "Optimized for Apple Silicon"
+                    description: "Powered by optimized AI for Apple Silicon."
                 )
 
                 FeatureRow(
                     icon: "globe",
-                    title: "100+ Languages",
-                    description: "Transcribe in any language"
+                    title: "Global Reach",
+                    description: "Support for 100+ languages and dialects."
                 )
             }
-            .padding(.top, 20)
-            .padding(.bottom, 20)
+            .padding(24)
+            .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 20))
         }
     }
 }
@@ -151,18 +167,20 @@ struct FeatureRow: View {
     let description: String
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 16) {
+            // Icon with Liquid Glass
             Image(systemName: icon)
-                .font(.title2)
+                .font(.system(size: 18, weight: .semibold))
                 .foregroundColor(.accentColor)
-                .frame(width: 32)
+                .frame(width: 40, height: 40)
+                .glassEffect(.regular.tint(.accentColor.opacity(0.2)), in: RoundedRectangle(cornerRadius: 10))
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.headline)
+                    .font(.system(size: 15, weight: .bold, design: .rounded))
 
                 Text(description)
-                    .font(.caption)
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
                     .foregroundColor(.secondary)
             }
         }
@@ -173,52 +191,55 @@ struct FeatureRow: View {
 
 struct CompleteStep: View {
     var body: some View {
-        VStack(spacing: 24) {
-            Image(systemName: "checkmark.circle.fill")
+        VStack(spacing: 32) {
+            // Success icon with Liquid Glass
+            Image(systemName: "checkmark.seal.fill")
                 .font(.system(size: 80))
                 .foregroundColor(.green)
-                .padding(.top, 20)
+                .symbolEffect(.bounce, options: .repeating)
+                .frame(width: 140, height: 140)
+                .glassEffect(.regular.tint(.green.opacity(0.15)), in: .circle)
 
             VStack(spacing: 12) {
                 Text("You're All Set!")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
+                    .font(.system(size: 32, weight: .bold, design: .rounded))
 
-                Text("Echo-text is ready to use. Press your keyboard shortcut to start dictating from anywhere.")
-                    .font(.body)
+                Text("EchoText is ready to go. Dictate from anywhere with a single shortcut.")
+                    .font(.system(size: 16, weight: .medium, design: .rounded))
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: 400)
             }
 
-            // Quick tips
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Quick Tips:")
-                    .font(.headline)
+            // Tips with Liquid Glass card
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Quick Tips")
+                    .font(.system(size: 18, weight: .bold, design: .rounded))
 
-                TipRow(text: "Press ⇧⌘R to start/stop recording")
-                TipRow(text: "Look for the mic icon in your menu bar")
-                TipRow(text: "Your text is automatically inserted where you're typing")
+                TipRow(icon: "command", text: "Press ⇧⌘R to start/stop anytime")
+                TipRow(icon: "menubar.arrow.up.rectangle", text: "Control from the Menu Bar icon")
+                TipRow(icon: "text.cursor", text: "Text is auto-inserted at your cursor")
             }
-            .padding()
-            .background(Color(NSColor.controlBackgroundColor))
-            .cornerRadius(12)
-            .padding(.bottom, 20)
+            .padding(24)
+            .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 20))
         }
     }
 }
 
-// MARK: - Tip Row
-
 struct TipRow: View {
+    let icon: String
     let text: String
 
     var body: some View {
-        HStack {
-            Image(systemName: "lightbulb.fill")
-                .foregroundColor(.yellow)
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(.accentColor)
+                .frame(width: 20)
+            
             Text(text)
-                .font(.caption)
+                .font(.system(size: 13, weight: .medium, design: .rounded))
+                .foregroundColor(.primary.opacity(0.8))
         }
     }
 }

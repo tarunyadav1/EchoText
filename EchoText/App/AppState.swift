@@ -21,6 +21,11 @@ final class AppState: ObservableObject {
     @Published var showOnboarding = false
     @Published var errorMessage: String?
     @Published var showError = false
+    @Published var showSuccessToast = false
+    @Published var successToastMessage: String = ""
+
+    // Focus Mode State
+    @Published var isFocusModeActive = false
 
     // Settings
     @Published var settings: AppSettings
@@ -28,11 +33,14 @@ final class AppState: ObservableObject {
     // MARK: - Services
     let audioService: AudioRecordingService
     let whisperService: WhisperService
+    let parakeetService: ParakeetService
     let hotkeyService: HotkeyService
     let textInsertionService: TextInsertionService
     let permissionService: PermissionService
     let modelDownloadService: ModelDownloadService
     let voiceActivityDetector: VoiceActivityDetector
+    let diarizationService: SpeakerDiarizationService
+    let historyService = TranscriptionHistoryService.shared
 
     // MARK: - Private Properties
     private var cancellables = Set<AnyCancellable>()
@@ -47,6 +55,7 @@ final class AppState: ObservableObject {
         // Initialize services
         self.audioService = AudioRecordingService()
         self.whisperService = WhisperService()
+        self.parakeetService = ParakeetService()
         self.hotkeyService = HotkeyService()
         self.textInsertionService = TextInsertionService()
         self.permissionService = PermissionService()
@@ -55,6 +64,7 @@ final class AppState: ObservableObject {
             energyThreshold: loadedSettings.vadEnergyThreshold,
             silenceThreshold: loadedSettings.vadSilenceThreshold
         )
+        self.diarizationService = SpeakerDiarizationService()
 
         // Setup bindings
         setupBindings()
@@ -79,6 +89,8 @@ final class AppState: ObservableObject {
         case start
         case stop
         case cancel
+        case enterFocusMode
+        case exitFocusMode
     }
 
     /// Unified entry point for all recording actions to prevent race conditions
@@ -95,8 +107,37 @@ final class AppState: ObservableObject {
                 await stopRecording()
             case .cancel:
                 cancelRecording()
+            case .enterFocusMode:
+                enterFocusMode()
+            case .exitFocusMode:
+                exitFocusMode()
             }
         }
+    }
+
+    // MARK: - Focus Mode
+
+    /// Enter focus mode - show full screen transcription window
+    private func enterFocusMode() {
+        guard !isFocusModeActive else { return }
+
+        // Check if model is loaded for the active engine
+        guard isActiveEngineModelLoaded else {
+            errorMessage = "Please download and load a \(settings.transcriptionEngine.displayName) model first"
+            showError = true
+            return
+        }
+
+        isFocusModeActive = true
+        NotificationCenter.default.post(name: .showFocusModeWindow, object: nil)
+    }
+
+    /// Exit focus mode
+    private func exitFocusMode() {
+        guard isFocusModeActive else { return }
+
+        isFocusModeActive = false
+        NotificationCenter.default.post(name: .hideFocusModeWindow, object: nil)
     }
 
     // MARK: - Recording Control
@@ -152,6 +193,11 @@ final class AppState: ObservableObject {
                 NotificationCenter.default.post(name: .showFloatingWindow, object: nil)
             }
 
+            // Show captions overlay if enabled
+            if settings.captionsSettings.enabled {
+                NotificationCenter.default.post(name: .showCaptionsWindow, object: nil)
+            }
+
             NotificationCenter.default.post(name: .recordingStarted, object: nil)
         } catch {
             handleError(error)
@@ -183,10 +229,13 @@ final class AppState: ObservableObject {
             return
         }
 
-        // Check if model is loaded
-        guard whisperService.isModelLoaded else {
+        // Check if model is loaded for the active engine
+        guard isActiveEngineModelLoaded else {
             recordingState = .idle
-            handleError(WhisperServiceError.modelNotLoaded)
+            let error: Error = settings.transcriptionEngine == .whisper
+                ? WhisperServiceError.modelNotLoaded
+                : ParakeetServiceError.modelNotLoaded
+            handleError(error)
             try? FileManager.default.removeItem(at: audioURL)
             return
         }
@@ -195,16 +244,13 @@ final class AppState: ObservableObject {
             // Try using in-memory audio data first (more reliable)
             let result: TranscriptionResult
 
-            if let audioData = audioService.getRecordedAudioData(), !audioData.isEmpty {
-                print("[EchoText] Using in-memory audio buffer: \(audioData.count) samples")
-                // Use in-memory buffer (bypasses file I/O issues)
-                let language = settings.selectedLanguage == "auto" ? nil : settings.selectedLanguage
-                result = try await whisperService.transcribe(audioData: audioData, language: language)
-            } else {
-                print("[EchoText] Using file-based audio: \(audioURL.path)")
-                // Fallback to file-based transcription
-                let language = settings.selectedLanguage == "auto" ? nil : settings.selectedLanguage
-                result = try await whisperService.transcribe(audioURL: audioURL, language: language)
+            // Choose transcription method based on selected engine
+            switch settings.transcriptionEngine {
+            case .whisper:
+                result = try await transcribeWithWhisper(audioURL: audioURL)
+
+            case .parakeet:
+                result = try await transcribeWithParakeet(audioURL: audioURL)
             }
 
             print("[EchoText] Transcription result: '\(result.text)'")
@@ -212,6 +258,9 @@ final class AppState: ObservableObject {
             // Update state
             lastTranscription = result
             transcriptionHistory.insert(result, at: 0)
+
+            // Save to persistent history
+            historyService.save(result, source: .dictation)
 
             // Insert text if enabled and not empty
             NSLog("[AppState] autoInsertText=%d, result.isEmpty=%d, text='%@'", settings.autoInsertText ? 1 : 0, result.isEmpty ? 1 : 0, result.text)
@@ -234,6 +283,17 @@ final class AppState: ObservableObject {
                 object: nil,
                 userInfo: ["result": result]
             )
+
+            // Show success toast
+            let wordCount = result.wordCount
+            successToastMessage = settings.autoInsertText ? "Inserted \(wordCount) word\(wordCount == 1 ? "" : "s")" : "Copied \(wordCount) word\(wordCount == 1 ? "" : "s")"
+            showSuccessToast = true
+
+            // Auto-hide toast after 2 seconds
+            Task {
+                try? await Task.sleep(nanoseconds: 2_000_000_000)
+                showSuccessToast = false
+            }
         } catch {
             print("[EchoText] Error: \(error.localizedDescription)")
             handleError(error)
@@ -244,6 +304,9 @@ final class AppState: ObservableObject {
 
         // Hide floating window now that processing is complete
         hideFloatingWindow()
+
+        // Hide captions overlay
+        NotificationCenter.default.post(name: .hideCaptionsWindow, object: nil)
 
         NotificationCenter.default.post(name: .recordingStopped, object: nil)
     }
@@ -257,27 +320,124 @@ final class AppState: ObservableObject {
         audioService.cancelRecording()
         recordingState = .idle
         hideFloatingWindow()
+        NotificationCenter.default.post(name: .hideCaptionsWindow, object: nil)
+    }
+
+    // MARK: - Transcription Helpers
+
+    /// Transcribe using Whisper engine
+    private func transcribeWithWhisper(audioURL: URL) async throws -> TranscriptionResult {
+        let language = settings.selectedLanguage == "auto" ? nil : settings.selectedLanguage
+        let prompt = settings.customVocabulary.isEmpty ? nil : settings.customVocabulary.joined(separator: ", ")
+
+        if let audioData = audioService.getRecordedAudioData(), !audioData.isEmpty {
+            print("[EchoText] Using in-memory audio buffer with Whisper: \(audioData.count) samples")
+
+            if settings.enableSpeakerDiarization {
+                return try await whisperService.transcribeWithDiarization(
+                    audioURL: audioURL,
+                    language: language,
+                    diarizationService: diarizationService,
+                    removeFillers: settings.removeFillerWords
+                )
+            } else {
+                return try await whisperService.transcribe(
+                    audioData: audioData,
+                    language: language,
+                    prompt: prompt,
+                    removeFillers: settings.removeFillerWords
+                )
+            }
+        } else {
+            print("[EchoText] Using file-based audio with Whisper: \(audioURL.path)")
+
+            if settings.enableSpeakerDiarization {
+                return try await whisperService.transcribeWithDiarization(
+                    audioURL: audioURL,
+                    language: language,
+                    diarizationService: diarizationService,
+                    removeFillers: settings.removeFillerWords
+                )
+            } else {
+                return try await whisperService.transcribe(
+                    audioURL: audioURL,
+                    language: language,
+                    prompt: prompt,
+                    removeFillers: settings.removeFillerWords
+                )
+            }
+        }
+    }
+
+    /// Transcribe using Parakeet engine (English only)
+    private func transcribeWithParakeet(audioURL: URL) async throws -> TranscriptionResult {
+        // Parakeet is English only - warn if non-English language is selected
+        if settings.selectedLanguage != "auto" && settings.selectedLanguage != "en" {
+            print("[EchoText] Warning: Parakeet only supports English. Ignoring language setting: \(settings.selectedLanguage)")
+        }
+
+        if let audioData = audioService.getRecordedAudioData(), !audioData.isEmpty {
+            print("[EchoText] Using in-memory audio buffer with Parakeet: \(audioData.count) samples")
+            return try await parakeetService.transcribe(
+                audioData: audioData,
+                removeFillers: settings.removeFillerWords
+            )
+        } else {
+            print("[EchoText] Using file-based audio with Parakeet: \(audioURL.path)")
+            return try await parakeetService.transcribe(
+                audioURL: audioURL,
+                removeFillers: settings.removeFillerWords
+            )
+        }
     }
 
     // MARK: - Model Management
 
-    /// Load the default/selected model
+    /// Load the default/selected model for the active engine
     func loadDefaultModel() async {
-        guard !whisperService.isModelLoaded else { return }
-
-        do {
-            try await whisperService.loadModel(settings.selectedModelId)
-        } catch {
-            // Model might not be downloaded yet
-            print("Could not load model: \(error)")
+        switch settings.transcriptionEngine {
+        case .whisper:
+            guard !whisperService.isModelLoaded else { return }
+            do {
+                try await whisperService.loadModel(settings.selectedModelId)
+            } catch {
+                print("Could not load Whisper model: \(error)")
+            }
+        case .parakeet:
+            guard !parakeetService.isModelLoaded else { return }
+            do {
+                try await parakeetService.loadModel(settings.selectedParakeetModelId)
+            } catch {
+                print("Could not load Parakeet model: \(error)")
+            }
         }
     }
 
-    /// Load a specific model
+    /// Load a specific Whisper model
     func loadModel(_ modelId: String) async throws {
         try await whisperService.loadModel(modelId)
         settings.selectedModelId = modelId
         settings.save()
+    }
+
+    /// Load a specific Parakeet model
+    func loadParakeetModel(_ modelId: String) async throws {
+        try await parakeetService.loadModel(modelId)
+        settings.selectedParakeetModelId = modelId
+        settings.save()
+    }
+
+    /// Switch the active transcription engine
+    func switchEngine(to engine: TranscriptionEngine) async {
+        print("🔄 Switching engine to: \(engine.rawValue)")
+        settings.transcriptionEngine = engine
+        objectWillChange.send()  // Ensure UI updates
+        settings.save()
+        print("✅ Engine switched to \(engine.rawValue), settings saved")
+
+        // Load the appropriate model if not already loaded
+        await loadDefaultModel()
+        print("✅ Model loading complete for \(engine.rawValue)")
     }
 
     // MARK: - Private Methods
@@ -323,6 +483,10 @@ final class AppState: ObservableObject {
 
         hotkeyService.onCancelRecording = { [weak self] in
             self?.handleAction(.cancel)
+        }
+
+        hotkeyService.onToggleFocusMode = { [weak self] in
+            self?.handleAction(.enterFocusMode)
         }
 
         // Update hotkey service when recording mode changes
@@ -380,5 +544,24 @@ extension AppState {
         let minutes = Int(recordingDuration) / 60
         let seconds = Int(recordingDuration) % 60
         return String(format: "%d:%02d", minutes, seconds)
+    }
+
+    var totalWordCount: Int {
+        transcriptionHistory.reduce(0) { $0 + $1.wordCount }
+    }
+
+    /// Returns true if the currently selected engine's model is loaded
+    var isActiveEngineModelLoaded: Bool {
+        switch settings.transcriptionEngine {
+        case .whisper:
+            return whisperService.isModelLoaded
+        case .parakeet:
+            return parakeetService.isModelLoaded
+        }
+    }
+
+    /// Returns the name of the currently active transcription engine
+    var activeEngineName: String {
+        settings.transcriptionEngine.displayName
     }
 }

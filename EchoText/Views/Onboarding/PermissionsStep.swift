@@ -134,8 +134,7 @@ struct PermissionCard: View {
             }
         }
         .padding()
-        .background(Color(NSColor.controlBackgroundColor))
-        .cornerRadius(12)
+        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 12))
     }
 }
 

@@ -1,120 +1,149 @@
 import SwiftUI
 
-/// Floating window that appears during recording and processing (300x80px)
+/// Clean floating recording indicator - no borders
 struct FloatingRecordingWindow: View {
     @EnvironmentObject var appState: AppState
+    @State private var wavePhase: CGFloat = 0
 
     var body: some View {
-        HStack(spacing: 16) {
-            // Left indicator - waveform or processing spinner
-            if appState.isProcessing {
-                // Processing spinner
-                ProgressView()
-                    .scaleEffect(1.5)
-                    .frame(width: 80, height: 50)
-            } else {
-                // Waveform visualization
-                WaveformView(level: appState.audioLevel)
-                    .frame(width: 80)
-            }
+        HStack(spacing: 12) {
+            // Waveform indicator
+            waveformIndicator
 
-            // Status info
-            VStack(alignment: .leading, spacing: 4) {
+            // Status text
+            VStack(alignment: .leading, spacing: 1) {
                 Text(statusText)
-                    .font(.headline)
-                    .foregroundColor(statusColor)
+                    .font(DesignSystem.Typography.headlineMedium)
+                    .foregroundColor(DesignSystem.Colors.textPrimary)
 
                 Text(subtitleText)
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundColor(.secondary)
+                    .font(DesignSystem.Typography.monoSmall)
+                    .foregroundColor(appState.isRecording ? DesignSystem.Colors.error : DesignSystem.Colors.textSecondary)
             }
 
             Spacer()
 
-            // Controls - only show during recording
+            // Controls
             if appState.isRecording {
-                RecordingControlsView(
-                    onStop: {
-                        appState.handleAction(.stop)
-                    },
-                    onCancel: {
-                        appState.handleAction(.cancel)
-                    }
-                )
+                controlButtons
+            } else if appState.isProcessing {
+                ProgressView()
+                    .scaleEffect(0.7)
+                    .tint(DesignSystem.Colors.warning)
             }
         }
-        .padding(16)
-        .frame(width: 300, height: 80)
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: .black.opacity(0.2), radius: 10, y: 5)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .frame(width: 300, height: 60)
+        .liquidGlassPill()
+        .onAppear {
+            withAnimation(Animation.linear(duration: 2).repeatForever(autoreverses: false)) {
+                wavePhase = .pi * 2
+            }
+        }
     }
+
+    // MARK: - Visual Effect Blur (proper macOS glass)
+
+    struct VisualEffectBlur: NSViewRepresentable {
+        func makeNSView(context: Context) -> NSVisualEffectView {
+            let view = NSVisualEffectView()
+            view.material = .hudWindow
+            view.blendingMode = .behindWindow
+            view.state = .active
+            view.wantsLayer = true
+            return view
+        }
+
+        func updateNSView(_ nsView: NSVisualEffectView, context: Context) {}
+    }
+
+    // MARK: - Waveform Indicator
+
+    private var waveformIndicator: some View {
+        ZStack {
+            if appState.isRecording {
+                HStack(spacing: 2) {
+                    ForEach(0..<5, id: \.self) { i in
+                        RoundedRectangle(cornerRadius: 1.5)
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color(hex: "F9564F"), Color(hex: "F3C677")],
+                                    startPoint: .bottom,
+                                    endPoint: .top
+                                )
+                            )
+                            .frame(width: 3, height: barHeight(for: i))
+                            .animation(.easeInOut(duration: 0.12), value: appState.audioLevel)
+                    }
+                }
+            } else if appState.isProcessing {
+                Circle()
+                    .trim(from: 0, to: 0.7)
+                    .stroke(
+                        LinearGradient(
+                            colors: [Color(hex: "F9564F"), Color(hex: "F3C677")],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        ),
+                        style: StrokeStyle(lineWidth: 2.5, lineCap: .round)
+                    )
+                    .frame(width: 20, height: 20)
+                    .rotationEffect(Angle(radians: Double(wavePhase)))
+            } else {
+                Image(systemName: "mic.fill")
+                    .font(.system(size: 16))
+                    .foregroundColor(Color(hex: "F9564F"))
+            }
+        }
+        .frame(width: 36, height: 36)
+        .background(Color.primary.opacity(0.06), in: Circle())
+    }
+
+    private func barHeight(for index: Int) -> CGFloat {
+        let baseHeight: CGFloat = 6
+        let maxHeight: CGFloat = 22
+        let level = CGFloat(appState.audioLevel)
+        let offset = CGFloat(index) * 0.2
+        let height = baseHeight + (maxHeight - baseHeight) * level * (0.5 + sin(wavePhase + offset) * 0.5)
+        return max(baseHeight, min(maxHeight, height))
+    }
+
+    // MARK: - Control Buttons
+
+    private var controlButtons: some View {
+        HStack(spacing: 8) {
+            Button {
+                appState.handleAction(.stop)
+            } label: {
+                Image(systemName: "stop.fill")
+            }
+            .buttonStyle(WisprIconButtonStyle(size: 32, isActive: true))
+
+            Button {
+                appState.handleAction(.cancel)
+            } label: {
+                Image(systemName: "xmark")
+            }
+            .buttonStyle(WisprIconButtonStyle(size: 28, isActive: false))
+        }
+    }
+
+    // MARK: - Text
 
     private var statusText: String {
         switch appState.recordingState {
-        case .recording:
-            return "Recording..."
-        case .processing:
-            return "Processing..."
-        case .idle:
-            return "Ready"
+        case .recording: return "Recording"
+        case .processing: return "Processing"
+        case .idle: return "Ready"
         }
     }
 
     private var subtitleText: String {
         switch appState.recordingState {
-        case .recording:
-            return appState.formattedDuration
-        case .processing:
-            return "Transcribing audio"
-        case .idle:
-            return ""
-        }
-    }
-
-    private var statusColor: Color {
-        switch appState.recordingState {
-        case .recording:
-            return .primary
-        case .processing:
-            return .orange
-        case .idle:
-            return .secondary
-        }
-    }
-}
-
-// MARK: - Recording Controls View
-
-struct RecordingControlsView: View {
-    let onStop: () -> Void
-    let onCancel: () -> Void
-
-    var body: some View {
-        HStack(spacing: 8) {
-            // Stop button
-            Button(action: onStop) {
-                Image(systemName: "stop.fill")
-                    .font(.system(size: 16))
-                    .foregroundColor(.white)
-                    .frame(width: 36, height: 36)
-                    .background(Color.red)
-                    .clipShape(Circle())
-            }
-            .buttonStyle(.plain)
-            .help("Stop recording and transcribe")
-
-            // Cancel button
-            Button(action: onCancel) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.secondary)
-                    .frame(width: 32, height: 32)
-                    .background(Color(NSColor.controlBackgroundColor))
-                    .clipShape(Circle())
-            }
-            .buttonStyle(.plain)
-            .help("Cancel recording")
+        case .recording: return appState.formattedDuration
+        case .processing: return "Transcribing..."
+        case .idle: return ""
         }
     }
 }
@@ -128,8 +157,11 @@ class FloatingWindowController {
         if window == nil {
             createWindow()
         }
-
-        window?.contentView = NSHostingView(rootView: view)
+        window?.contentView = NSHostingView(rootView: 
+            view
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.clear)
+        )
         window?.orderFrontRegardless()
     }
 
@@ -139,7 +171,7 @@ class FloatingWindowController {
 
     private func createWindow() {
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 300, height: 80),
+            contentRect: NSRect(x: 0, y: 0, width: 400, height: 120),
             styleMask: [.borderless],
             backing: .buffered,
             defer: false
@@ -148,15 +180,14 @@ class FloatingWindowController {
         window.level = .floating
         window.isOpaque = false
         window.backgroundColor = .clear
-        window.hasShadow = true
-        window.collectionBehavior = [.canJoinAllSpaces, .transient]
+        window.hasShadow = false
+        window.collectionBehavior = [.canJoinAllSpaces, .transient, .ignoresCycle]
         window.isMovableByWindowBackground = true
 
-        // Position in top-center of main screen
         if let screen = NSScreen.main {
             let screenFrame = screen.visibleFrame
-            let x = screenFrame.midX - 150
-            let y = screenFrame.maxY - 100
+            let x = screenFrame.midX - 200
+            let y = screenFrame.minY + 60
             window.setFrameOrigin(NSPoint(x: x, y: y))
         }
 
@@ -164,7 +195,6 @@ class FloatingWindowController {
     }
 }
 
-// MARK: - Preview
 #Preview {
     FloatingRecordingWindow()
         .environmentObject(AppState())
