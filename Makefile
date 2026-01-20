@@ -157,6 +157,11 @@ watch:
 xcode:
 	@open $(PROJECT)
 
+# Create and publish a release
+release:
+	@echo "$(GREEN)Creating release...$(NC)"
+	@./scripts/release.sh
+
 # Show help
 help:
 	@echo "$(GREEN)EchoText Development Commands$(NC)"
@@ -181,6 +186,9 @@ help:
 	@echo ""
 	@echo "  $(CYAN)Permissions:$(NC)"
 	@echo "  $(YELLOW)make open-settings$(NC) - Open Accessibility settings"
+	@echo ""
+	@echo "  $(CYAN)Release:$(NC)"
+	@echo "  $(YELLOW)make release$(NC)       - Build, sign, and publish release"
 	@echo ""
 	@echo "  $(CYAN)Other:$(NC)"
 	@echo "  $(YELLOW)make xcode$(NC)         - Open project in Xcode"

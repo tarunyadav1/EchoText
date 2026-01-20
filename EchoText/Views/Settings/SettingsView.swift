@@ -14,6 +14,8 @@ struct SettingsView: View {
         case advanced = "Advanced"
         case vocabulary = "Vocabulary"
         case diarization = "Speakers"
+        case updates = "Updates"
+        case license = "License"
 
         var icon: String {
             switch self {
@@ -24,6 +26,8 @@ struct SettingsView: View {
             case .advanced: return "slider.horizontal.3"
             case .vocabulary: return "character.book.closed"
             case .diarization: return "person.2"
+            case .updates: return "arrow.triangle.2.circlepath"
+            case .license: return "star.circle"
             }
         }
     }
@@ -120,6 +124,10 @@ struct SettingsView: View {
                     VocabularySettingsSection()
                 case .diarization:
                     DiarizationSettingsSection()
+                case .updates:
+                    UpdatesSettingsSection()
+                case .license:
+                    LicenseSettingsSection()
                 }
             }
         }
@@ -141,6 +149,10 @@ struct SettingsView: View {
             return "Add custom words to improve accuracy"
         case .diarization:
             return "Configure speaker detection and labeling"
+        case .updates:
+            return "Check for updates and configure automatic updates"
+        case .license:
+            return "Manage your EchoText Pro license"
         }
     }
 }
@@ -280,6 +292,61 @@ struct GeneralSettingsSection: View {
             // Text Processing
             SettingsSection(title: "Text Processing", footer: "Removes \"um\", \"uh\", \"like\", and other speech disfluencies") {
                 SettingsToggleRow(label: "Remove filler words", isOn: $appState.settings.removeFillerWords)
+            }
+
+            // Privacy & Feedback
+            PrivacyAndFeedbackSection()
+        }
+    }
+}
+
+// MARK: - Privacy & Feedback Section
+
+struct PrivacyAndFeedbackSection: View {
+    @State private var telemetryEnabled: Bool = TelemetryService.shared.telemetryEnabled
+    @State private var showFeedback = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 24) {
+            SettingsSection(title: "Privacy", footer: "Anonymous analytics help us improve EchoText. No personal data is collected.") {
+                VStack(alignment: .leading, spacing: 0) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Send anonymous analytics")
+                                .font(.system(size: 14))
+                            Text("Usage patterns, errors, and app health")
+                                .font(.system(size: 12))
+                                .foregroundColor(.secondary)
+                        }
+                        Spacer()
+                        Toggle("", isOn: $telemetryEnabled)
+                            .toggleStyle(.switch)
+                            .labelsHidden()
+                            .onChange(of: telemetryEnabled) { _, newValue in
+                                if newValue {
+                                    TelemetryService.shared.enable()
+                                } else {
+                                    TelemetryService.shared.disable()
+                                }
+                            }
+                    }
+                }
+            }
+
+            SettingsSection(title: "Feedback", footer: "Help us make EchoText better for everyone.") {
+                Button {
+                    showFeedback = true
+                } label: {
+                    HStack {
+                        Image(systemName: "bubble.left.and.bubble.right")
+                            .font(.system(size: 14))
+                        Text("Send Feedback...")
+                            .font(.system(size: 14))
+                    }
+                }
+                .sheet(isPresented: $showFeedback) {
+                    FeedbackView()
+                }
             }
         }
     }
@@ -942,6 +1009,94 @@ struct VocabularySettingsSection: View {
     private func removeWord(_ word: String) {
         appState.settings.customVocabulary.removeAll { $0 == word }
         appState.settings.save()
+    }
+}
+
+// MARK: - Updates Settings Section
+
+struct UpdatesSettingsSection: View {
+    @StateObject private var updateService = UpdateService.shared
+    @State private var automaticChecks: Bool = true
+    @State private var automaticDownloads: Bool = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 24) {
+            // Current Version
+            SettingsSection(title: "Current Version") {
+                VStack(alignment: .leading, spacing: 0) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("EchoText \(updateService.currentVersion)")
+                                .font(.system(size: 15, weight: .semibold))
+                            Text("Build \(updateService.currentBuild)")
+                                .font(.system(size: 13))
+                                .foregroundColor(.secondary)
+                        }
+                        Spacer()
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                            .font(.system(size: 20))
+                    }
+                }
+            }
+
+            // Check for Updates
+            SettingsSection(title: "Check for Updates", footer: "Last checked: \(updateService.lastCheckDateFormatted)") {
+                VStack(alignment: .leading, spacing: 12) {
+                    Button {
+                        updateService.checkForUpdates()
+                    } label: {
+                        HStack {
+                            if updateService.isCheckingForUpdates {
+                                ProgressView()
+                                    .controlSize(.small)
+                                    .padding(.trailing, 4)
+                            }
+                            Text(updateService.isCheckingForUpdates ? "Checking..." : "Check for Updates")
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(updateService.isCheckingForUpdates || !updateService.canCheckForUpdates)
+                }
+            }
+
+            // Automatic Updates
+            SettingsSection(title: "Automatic Updates", footer: "When enabled, EchoText will periodically check for updates in the background.") {
+                VStack(alignment: .leading, spacing: 0) {
+                    SettingsToggleRow(label: "Check for updates automatically", isOn: $automaticChecks)
+                        .onChange(of: automaticChecks) { _, newValue in
+                            updateService.automaticUpdateChecks = newValue
+                        }
+
+                    SettingsDivider()
+
+                    SettingsToggleRow(label: "Download updates automatically", isOn: $automaticDownloads)
+                        .onChange(of: automaticDownloads) { _, newValue in
+                            updateService.automaticDownloads = newValue
+                        }
+                        .disabled(!automaticChecks)
+                        .opacity(automaticChecks ? 1.0 : 0.5)
+                }
+            }
+
+            // Update Channel Info
+            SettingsSection(title: "About Updates") {
+                VStack(alignment: .leading, spacing: 0) {
+                    Label("Updates are delivered securely via Sparkle", systemImage: "lock.shield")
+                        .font(.system(size: 13))
+                    SettingsDivider()
+                    Label("All updates are signed and verified", systemImage: "checkmark.seal")
+                        .font(.system(size: 13))
+                    SettingsDivider()
+                    Label("Your data never leaves your device", systemImage: "hand.raised")
+                        .font(.system(size: 13))
+                }
+            }
+        }
+        .onAppear {
+            automaticChecks = updateService.automaticUpdateChecks
+            automaticDownloads = updateService.automaticDownloads
+        }
     }
 }
 

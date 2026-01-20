@@ -3,6 +3,7 @@ import SwiftUI
 /// Main window with proper Liquid Glass navigation (macOS 26+)
 struct MainWindow: View {
     @EnvironmentObject var appState: AppState
+    @StateObject private var licenseService = LicenseService.shared
     @State private var selectedTab: SidebarTab = .home
     @State private var selectedContentTab: ContentTab = .dictation
     @State private var emptyStateWaveAnimation = false
@@ -23,6 +24,7 @@ struct MainWindow: View {
     enum SidebarTab: String, CaseIterable, Identifiable {
         case home = "Home"
         case history = "History"
+        case feedback = "Feedback"
         case settings = "Settings"
 
         var id: String { rawValue }
@@ -31,6 +33,7 @@ struct MainWindow: View {
             switch self {
             case .home: return "house"
             case .history: return "clock.arrow.circlepath"
+            case .feedback: return "bubble.left"
             case .settings: return "gearshape"
             }
         }
@@ -39,11 +42,13 @@ struct MainWindow: View {
             switch self {
             case .home: return "house.fill"
             case .history: return "clock.arrow.circlepath"
+            case .feedback: return "bubble.left.fill"
             case .settings: return "gearshape.fill"
             }
         }
 
         static var mainTabs: [SidebarTab] { [.home, .history] }
+        static var bottomTabs: [SidebarTab] { [.feedback, .settings] }
     }
 
     enum ContentTab: String, CaseIterable {
@@ -55,6 +60,20 @@ struct MainWindow: View {
     }
 
     var body: some View {
+        Group {
+            // Show license gate if not licensed
+            if !licenseService.licenseState.isValid {
+                LicenseGateView()
+            } else {
+                // Main app content (only shown when licensed)
+                mainAppContent
+            }
+        }
+    }
+
+    // MARK: - Main App Content (Licensed Users Only)
+
+    private var mainAppContent: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             // Sidebar with Liquid Glass navigation
             sidebarContent
@@ -125,9 +144,11 @@ struct MainWindow: View {
             // Bottom section
             GlassEffectContainer {
                 VStack(spacing: 2) {
+                    sidebarButton(.feedback)
+
                     sidebarButton(.settings)
 
-                    Button {} label: {
+                    Link(destination: URL(string: "https://echotext.app/support")!) {
                         HStack(spacing: 10) {
                             Image(systemName: "questionmark.circle")
                                 .font(.system(size: 15))
@@ -135,6 +156,9 @@ struct MainWindow: View {
                             Text("Help & Support")
                                 .font(.system(size: 13))
                             Spacer()
+                            Image(systemName: "arrow.up.right")
+                                .font(.system(size: 10))
+                                .foregroundColor(.secondary.opacity(0.5))
                         }
                         .foregroundColor(.secondary)
                         .padding(.horizontal, 12)
@@ -239,6 +263,9 @@ struct MainWindow: View {
 
         case .history:
             HistoryView()
+
+        case .feedback:
+            EmbeddedFeedbackView()
 
         case .settings:
             SettingsView()

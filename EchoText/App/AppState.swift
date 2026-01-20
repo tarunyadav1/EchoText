@@ -41,6 +41,7 @@ final class AppState: ObservableObject {
     let voiceActivityDetector: VoiceActivityDetector
     let diarizationService: SpeakerDiarizationService
     let historyService = TranscriptionHistoryService.shared
+    let licenseService = LicenseService.shared
 
     // MARK: - Private Properties
     private var cancellables = Set<AnyCancellable>()
@@ -563,5 +564,22 @@ extension AppState {
     /// Returns the name of the currently active transcription engine
     var activeEngineName: String {
         settings.transcriptionEngine.displayName
+    }
+
+    // MARK: - License Helpers
+
+    /// Check if user has Pro license
+    var isPro: Bool {
+        licenseService.licenseState.isPro
+    }
+
+    /// Check if a specific Pro feature is available
+    func isFeatureAvailable(_ feature: ProFeature) -> Bool {
+        licenseService.isFeatureAvailable(feature)
+    }
+
+    /// Check if large models can be used (Pro only)
+    var canUseLargeModels: Bool {
+        isFeatureAvailable(.largeModels)
     }
 }

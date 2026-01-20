@@ -17,6 +17,7 @@ EchoText is a macOS app for voice-to-text transcription using WhisperKit (on-dev
 - **Dependencies**:
   - WhisperKit (v0.6.0+) - On-device speech recognition
   - KeyboardShortcuts (v2.0.0+) - Global hotkey handling
+  - Sparkle (v2.6.0+) - Auto-update framework
 
 ## Color Palette
 
@@ -98,6 +99,9 @@ make rebuild     # Clean + build
 # Permissions
 make open-settings  # Open Accessibility settings
 
+# Release
+make release     # Build, sign, and publish a release
+
 # Other
 make xcode       # Open project in Xcode
 make help        # Show all commands
@@ -136,6 +140,7 @@ The app uses ad-hoc signing for Debug builds so permissions persist across rebui
 | Global hotkey | `HotkeyService.swift` |
 | UI styling | `DesignSystem.swift` |
 | App settings | `AppSettings.swift`, `SettingsView.swift` |
+| Auto-updates | `UpdateService.swift`, `scripts/release.sh` |
 
 ## Testing Changes
 
@@ -156,3 +161,172 @@ The Makefile uses ad-hoc signing which doesn't require a dev team. If building f
 
 ### WhisperKit model download issues
 Models are downloaded to `~/Library/Application Support/EchoText/Models/`. Delete this folder to force re-download.
+
+---
+
+## Auto-Update System (Sparkle)
+
+EchoText uses Sparkle for automatic updates, hosted on Cloudflare.
+
+### Infrastructure
+
+| Component | URL/Value |
+|-----------|-----------|
+| **Appcast URL** | `https://echotext-updates.tarunyadav9761.workers.dev/appcast.xml` |
+| **Worker URL** | `https://echotext-updates.tarunyadav9761.workers.dev` |
+| **R2 Bucket** | `echotext-updates` |
+| **KV Namespace ID** | `5b57a166e2a24287b2d3d4eae25b71ff` |
+
+### Credentials
+
+| Secret | Value |
+|--------|-------|
+| **Admin Secret** | `echotext-updates-admin-76f9a7be375bfaa6d07e3b7632960167` |
+| **Cloudflare API Token** | `UZn5BlGUhkS6Zbyvl1Ua42luCleJG46YtUGsD2Vw` |
+| **Cloudflare Account ID** | `9da0a3e2fbc6f382f556b4c4c622f6a3` |
+
+### EdDSA Signing Key
+
+- **Public Key** (in Info.plist): `Bo67frKqpavPc2nqKQk0xu+XThLl0SK8R/XIPfKGNa8=`
+- **Private Key**: Stored in macOS Keychain (generated via Sparkle's `generate_keys`)
+
+### How to Release an Update
+
+1. **Bump version** in `Info.plist`:
+   - `CFBundleShortVersionString` (e.g., "1.1")
+   - `CFBundleVersion` (e.g., "2")
+
+2. **Set environment variables**:
+   ```bash
+   export ECHOTEXT_ADMIN_SECRET="echotext-updates-admin-76f9a7be375bfaa6d07e3b7632960167"
+   export CLOUDFLARE_API_TOKEN="UZn5BlGUhkS6Zbyvl1Ua42luCleJG46YtUGsD2Vw"
+   ```
+
+3. **Run the release script**:
+   ```bash
+   make release
+   ```
+
+This will:
+- Build the app in Release configuration
+- Create a signed DMG
+- Upload to Cloudflare R2
+- Update the appcast automatically
+
+### Worker Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/health` | GET | Health check |
+| `/appcast.xml` | GET | Sparkle appcast feed |
+| `/releases/:filename` | GET | Download update files |
+| `/admin/release` | POST | Create/update release (requires auth) |
+| `/admin/releases` | GET | List all releases (requires auth) |
+
+### Files
+
+| File | Purpose |
+|------|---------|
+| `cloudflare-updates-worker/` | Cloudflare Worker source |
+| `scripts/release.sh` | Release automation script |
+| `EchoText/Services/UpdateService.swift` | Sparkle wrapper service |
+
+---
+
+## Feedback System
+
+EchoText includes an in-app feedback system that sends user feedback to a Cloudflare Worker backend.
+
+### Infrastructure
+
+| Component | URL/Value |
+|-----------|-----------|
+| **Feedback URL** | `https://echotext-feedback.tarunyadav9761.workers.dev` |
+| **KV Namespace ID** | `eda9c0947d5e4a788eca99a3ef1e0e4a` |
+
+### Credentials
+
+| Secret | Value |
+|--------|-------|
+| **Admin Secret** | `echotext-feedback-admin-ed64161243d1f8a844b6b28b4c67ae60` |
+
+### Worker Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/health` | GET | Health check |
+| `/submit` | POST | Submit feedback |
+| `/admin/feedback` | GET | List all feedback (requires auth) |
+| `/admin/feedback/:id` | GET | Get specific feedback (requires auth) |
+| `/admin/feedback/:id` | DELETE | Delete feedback (requires auth) |
+
+### Files
+
+| File | Purpose |
+|------|---------|
+| `cloudflare-feedback-worker/` | Cloudflare Worker source |
+| `EchoText/Services/FeedbackService.swift` | Feedback submission service |
+| `EchoText/Views/Feedback/FeedbackView.swift` | Feedback UI |
+
+### Optional: Discord/Slack Notifications
+
+To receive notifications when users submit feedback:
+
+```bash
+cd cloudflare-feedback-worker
+npx wrangler secret put NOTIFICATION_WEBHOOK
+# Paste your Discord or Slack webhook URL
+```
+
+---
+
+## Telemetry (TelemetryDeck)
+
+EchoText uses TelemetryDeck for privacy-focused analytics. Users can opt out in Settings.
+
+| Setting | Value |
+|---------|-------|
+| **App ID** | `F08DE9FB-4EDC-4F8D-8F43-442F290A80C4` |
+| **Organization** | `com.tarunsaas` |
+| **Dashboard** | https://dashboard.telemetrydeck.com |
+
+Events tracked:
+- `appLaunch` - App opened
+- `recordingStarted` - User started recording
+- `recordingCompleted` - Recording finished with transcription
+- `transcriptionCompleted` - File/URL transcription completed
+- `error` - Errors with context
+
+---
+
+## ⚠️ TODO: REMOVE BEFORE PRODUCTION ⚠️
+
+### Credentials in This File
+
+The credentials documented above (Admin Secret, API Token) are stored here for development convenience. Before making this repo public or sharing:
+
+1. **Rotate the Cloudflare API Token** in Cloudflare dashboard
+2. **Rotate the Admin Secret** with: `npx wrangler secret put ADMIN_SECRET`
+3. **Move secrets to environment variables** or a secrets manager
+4. **Remove or redact this section** from CLAUDE.md
+
+### Dev Bypass Key for License Testing
+
+A development bypass key exists for testing the app without a real license:
+
+- **Key**: `ECHOTEXT-DEV-2024`
+- **Location**: `EchoText/Services/LicenseService.swift` (lines 19-22 and 71-94)
+
+**How to use**: Enter this key in the license activation field to bypass server validation.
+
+**To remove for production**:
+1. Delete lines 19-22 in `LicenseService.swift`:
+   ```swift
+   #if DEBUG
+   private let devBypassKey = "ECHOTEXT-DEV-2024"
+   #endif
+   ```
+
+2. Delete lines 71-94 in `LicenseService.swift` (the bypass check in `activate()` function)
+
+**Note**: The `#if DEBUG` directive means this code is automatically excluded from Release builds. However, you should still remove it before publishing to ensure it's completely gone.

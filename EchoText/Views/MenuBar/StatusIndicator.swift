@@ -1,24 +1,13 @@
 import SwiftUI
 
-/// Menu bar status indicator icon
+/// Menu bar status indicator icon using custom AI Mic icon
 struct StatusIndicator: View {
     let state: RecordingState
 
     var body: some View {
-        Image(systemName: iconName)
-            .symbolRenderingMode(.palette)
-            .foregroundStyle(primaryColor, secondaryColor)
-    }
-
-    private var iconName: String {
-        switch state {
-        case .idle:
-            return "mic"
-        case .recording:
-            return "mic.fill"
-        case .processing:
-            return "waveform"
-        }
+        Image("MenuBarIcon")
+            .renderingMode(.template)
+            .foregroundStyle(primaryColor)
     }
 
     private var primaryColor: Color {
@@ -31,17 +20,6 @@ struct StatusIndicator: View {
             return Color(hex: "F3C677") // Gold Crayola
         }
     }
-
-    private var secondaryColor: Color {
-        switch state {
-        case .idle:
-            return .secondary
-        case .recording:
-            return Color(hex: "B33F62") // Irresistible
-        case .processing:
-            return Color(hex: "F3C677").opacity(0.5)
-        }
-    }
 }
 
 /// Animated version for menu bar that pulses when recording
@@ -51,16 +29,15 @@ struct AnimatedStatusIndicator: View {
 
     var body: some View {
         ZStack {
-            // Base icon
             StatusIndicator(state: state)
 
-            // Pulsing overlay for recording
+            // Pulsing dot for recording state
             if state == .recording {
                 Circle()
-                    .fill(Color(hex: "F9564F")) // Tart Orange
-                    .frame(width: 6, height: 6)
-                    .offset(x: 6, y: -6)
-                    .scaleEffect(isAnimating ? 1.2 : 1.0)
+                    .fill(Color(hex: "F9564F"))
+                    .frame(width: 4, height: 4)
+                    .offset(x: 8, y: -8)
+                    .scaleEffect(isAnimating ? 1.3 : 1.0)
                     .opacity(isAnimating ? 1.0 : 0.6)
             }
         }
@@ -78,20 +55,24 @@ struct AnimatedStatusIndicator: View {
 
 // MARK: - Preview
 #Preview {
-    VStack(spacing: 20) {
-        HStack(spacing: 20) {
-            StatusIndicator(state: .idle)
-            StatusIndicator(state: .recording)
-            StatusIndicator(state: .processing)
-        }
-        .font(.title)
+    VStack(spacing: 30) {
+        Text("AI Mic Menu Bar Icon")
+            .font(.headline)
 
-        HStack(spacing: 20) {
-            AnimatedStatusIndicator(state: .idle)
-            AnimatedStatusIndicator(state: .recording)
-            AnimatedStatusIndicator(state: .processing)
+        HStack(spacing: 30) {
+            VStack {
+                StatusIndicator(state: .idle)
+                Text("Idle").font(.caption)
+            }
+            VStack {
+                StatusIndicator(state: .recording)
+                Text("Recording").font(.caption)
+            }
+            VStack {
+                StatusIndicator(state: .processing)
+                Text("Processing").font(.caption)
+            }
         }
-        .font(.title)
     }
-    .padding()
+    .padding(40)
 }

@@ -1,6 +1,7 @@
 import Foundation
 import AppKit
 import SwiftUI
+import Sparkle
 
 /// AppDelegate for system-level integration
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -31,6 +32,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Initialize captions window controller
         captionsWindowController = CaptionsWindowController()
+
+        // Initialize Sparkle update service
+        _ = UpdateService.shared
+        NSLog("[AppDelegate] Sparkle update service initialized")
+
+        // Initialize telemetry service and track app launch
+        TelemetryService.shared.trackAppLaunch()
+        NSLog("[AppDelegate] Telemetry service initialized")
 
         // Setup notification observers
         setupNotificationObservers()

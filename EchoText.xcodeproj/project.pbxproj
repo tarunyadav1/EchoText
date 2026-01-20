@@ -8,12 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		0196159BF27B11E8A2559505 /* SpeakerLabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5798FAA2960DCCE10414B7E /* SpeakerLabelView.swift */; };
-		PRKEET01 /* TranscriptionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = PRKEET10 /* TranscriptionEngine.swift */; };
-		PRKEET02 /* ParakeetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = PRKEET11 /* ParakeetModel.swift */; };
-		PRKEET03 /* ParakeetService.swift in Sources */ = {isa = PBXBuildFile; fileRef = PRKEET12 /* ParakeetService.swift */; };
-		BENCH01 /* TranscriptionBenchmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = BENCH10 /* TranscriptionBenchmark.swift */; };
 		0DDAD065DAFC539031B70A78 /* URLDownloadService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB61D6CCA2B66BFE9C090F51 /* URLDownloadService.swift */; };
 		11398ACAC1B77C71E36E4F22 /* CaptionsOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85E91ADF65BD59522278FC97 /* CaptionsOverlayView.swift */; };
+		160F1DDC4F196CC15BE53CBE /* LicenseModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDAC70E2A2A1D0132B26961 /* LicenseModels.swift */; };
 		1BD6455CB290661F904B2EA9 /* ShortcutRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9934FAD908C830395B24B41 /* ShortcutRecorderView.swift */; };
 		211813AA646BBC34CAFF89AC /* TimestampOffsetEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED4E06F6F30ABA6F43DCBCF /* TimestampOffsetEditor.swift */; };
 		2AF8AEBD9A7F13FB2C126FE3 /* FocusModeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E76181DD0D2E096C207C1DA /* FocusModeViewModel.swift */; };
@@ -55,12 +52,19 @@
 		APP001 /* EchoTextApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC001 /* EchoTextApp.swift */; };
 		APP002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC002 /* AppDelegate.swift */; };
 		APP003 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC003 /* AppState.swift */; };
+		B2F0EF8393980EE5D12C2C36 /* LicenseGateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBD5ED4AA2C9D01AB2B81F7 /* LicenseGateView.swift */; };
+		B59766E31C2E3D5C49B090FB /* LicenseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0068E91D984466199C9A5095 /* LicenseService.swift */; };
 		C1F2F5DD367537ADD696856E /* HistoryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D16A744A7B811B429EC2F0B /* HistoryDetailView.swift */; };
 		C41CB6D87A2C62590770DBB5 /* VideoPlayerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E825C2641F5DFE914BA6DCB /* VideoPlayerService.swift */; };
 		C49FEDC66E06E0F06101F7FD /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE7929E7E247FA1DABF10BBE /* HistoryView.swift */; };
 		D5980F749F6F3B295819F66E /* Speaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F59AEE41F320B590C31E03 /* Speaker.swift */; };
 		E34FE1D869DC2AE4BBB42B5A /* MultiLanguageSubtitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E6EF985B43A80203F2F24C /* MultiLanguageSubtitleView.swift */; };
 		F021FA8746FA1A2D87AE8EC0 /* BatchTranscriptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9DAB1A8A9B6FF8A59ACB312 /* BatchTranscriptionView.swift */; };
+		F047699959AB0C777CD06018 /* LicenseSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC18F9EB2B55FE786148494 /* LicenseSettingsView.swift */; };
+		UPDT002 /* UpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = UPDT001 /* UpdateService.swift */; };
+		TLMT002 /* TelemetryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = TLMT001 /* TelemetryService.swift */; };
+		FDBK002 /* FeedbackService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDBK001 /* FeedbackService.swift */; };
+		FDBK011 /* FeedbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDBK010 /* FeedbackView.swift */; };
 		FA345FD768E4611C46545AB9 /* URLInputSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD0B2396AD5A9C03E9854FB /* URLInputSection.swift */; };
 		MDL001 /* RecordingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC010 /* RecordingState.swift */; };
 		MDL002 /* RecordingMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC011 /* RecordingMode.swift */; };
@@ -69,6 +73,9 @@
 		MDL005 /* SupportedLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC014 /* SupportedLanguage.swift */; };
 		MDL006 /* ExportFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC015 /* ExportFormat.swift */; };
 		MDL007 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC016 /* AppSettings.swift */; };
+		PRKEET01 /* TranscriptionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = PRKEET10 /* TranscriptionEngine.swift */; };
+		PRKEET02 /* ParakeetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = PRKEET11 /* ParakeetModel.swift */; };
+		PRKEET03 /* ParakeetService.swift in Sources */ = {isa = PBXBuildFile; fileRef = PRKEET12 /* ParakeetService.swift */; };
 		RES001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = RES010 /* Assets.xcassets */; };
 		RES002 /* yt-dlp in Resources */ = {isa = PBXBuildFile; fileRef = RES012 /* yt-dlp */; };
 		SVC001 /* AudioRecordingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC020 /* AudioRecordingService.swift */; };
@@ -107,11 +114,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0068E91D984466199C9A5095 /* LicenseService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LicenseService.swift; sourceTree = "<group>"; };
+		UPDT001 /* UpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateService.swift; sourceTree = "<group>"; };
+		TLMT001 /* TelemetryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelemetryService.swift; sourceTree = "<group>"; };
+		FDBK001 /* FeedbackService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackService.swift; sourceTree = "<group>"; };
+		FDBK010 /* FeedbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackView.swift; sourceTree = "<group>"; };
 		0998850ACEB6C59E59044FE7 /* HistoryDetailSidebar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = History/HistoryDetailSidebar.swift; sourceTree = "<group>"; };
-		PRKEET10 /* TranscriptionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionEngine.swift; sourceTree = "<group>"; };
-		PRKEET11 /* ParakeetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParakeetModel.swift; sourceTree = "<group>"; };
-		PRKEET12 /* ParakeetService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParakeetService.swift; sourceTree = "<group>"; };
-		BENCH10 /* TranscriptionBenchmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionBenchmark.swift; sourceTree = "<group>"; };
 		0E825C2641F5DFE914BA6DCB /* VideoPlayerService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VideoPlayerService.swift; sourceTree = "<group>"; };
 		1CE8A864E76241706F6F8393 /* EchoTextDocument.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EchoTextDocument.swift; sourceTree = "<group>"; };
 		1E76181DD0D2E096C207C1DA /* FocusModeViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FocusModeViewModel.swift; sourceTree = "<group>"; };
@@ -122,10 +130,12 @@
 		2B0A64B901081CCEC251E119 /* FocusModeCustomizationPanel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FocusMode/FocusModeCustomizationPanel.swift; sourceTree = "<group>"; };
 		2BA931FE7371E9C9ED3A2A58 /* HistoryDetailToolbar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = History/HistoryDetailToolbar.swift; sourceTree = "<group>"; };
 		2C0576EF4C8F35CB3D8B6BEF /* AudioPlayerBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AudioPlayerBar.swift; sourceTree = "<group>"; };
+		2DDAC70E2A2A1D0132B26961 /* LicenseModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LicenseModels.swift; sourceTree = "<group>"; };
 		329C5C148E852E4ECAB52B2F /* URLVideoMetadata.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = URLVideoMetadata.swift; sourceTree = "<group>"; };
 		3540A34A3185931199379AFA /* SpeakerDiarizationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SpeakerDiarizationService.swift; sourceTree = "<group>"; };
 		426337FAB2A43B7B1384E7F3 /* FocusModeSettings.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FocusModeSettings.swift; sourceTree = "<group>"; };
 		47569208CED5F5A6F9514221 /* MeetingTranscriptionViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MeetingTranscriptionViewModel.swift; sourceTree = "<group>"; };
+		4CBD5ED4AA2C9D01AB2B81F7 /* LicenseGateView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LicenseGateView.swift; sourceTree = "<group>"; };
 		4EA101B123F61031455F97BA /* BatchTranscriptionService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BatchTranscriptionService.swift; sourceTree = "<group>"; };
 		500096E182188CE69D5F8933 /* SpeakerManagerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SpeakerManagerView.swift; sourceTree = "<group>"; };
 		560C01A032D532AA412BC4A9 /* AudioChunkManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AudioChunkManager.swift; sourceTree = "<group>"; };
@@ -147,6 +157,8 @@
 		AC07A3A2D047AC42C1FFE15B /* SystemAudioService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SystemAudioService.swift; sourceTree = "<group>"; };
 		B0A46FDEA70519AE7BBC6FD8 /* WatchFolderService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WatchFolderService.swift; sourceTree = "<group>"; };
 		B89F4622276BBB10534BA71A /* EchoTextDocumentService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EchoTextDocumentService.swift; sourceTree = "<group>"; };
+		BDC18F9EB2B55FE786148494 /* LicenseSettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LicenseSettingsView.swift; sourceTree = "<group>"; };
+		BENCH10 /* TranscriptionBenchmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionBenchmark.swift; sourceTree = "<group>"; };
 		C5798FAA2960DCCE10414B7E /* SpeakerLabelView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SpeakerLabelView.swift; sourceTree = "<group>"; };
 		C8A84C310F27D8C4F795DA8C /* FocusModeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FocusMode/FocusModeView.swift; sourceTree = "<group>"; };
 		CDA64F40FED963C4CE65D81C /* HighlightableSegmentRow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HighlightableSegmentRow.swift; sourceTree = "<group>"; };
@@ -159,6 +171,9 @@
 		EE7929E7E247FA1DABF10BBE /* HistoryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = History/HistoryView.swift; sourceTree = "<group>"; };
 		EED4E06F6F30ABA6F43DCBCF /* TimestampOffsetEditor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimestampOffsetEditor.swift; sourceTree = "<group>"; };
 		FB61D6CCA2B66BFE9C090F51 /* URLDownloadService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = URLDownloadService.swift; sourceTree = "<group>"; };
+		PRKEET10 /* TranscriptionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionEngine.swift; sourceTree = "<group>"; };
+		PRKEET11 /* ParakeetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParakeetModel.swift; sourceTree = "<group>"; };
+		PRKEET12 /* ParakeetService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParakeetService.swift; sourceTree = "<group>"; };
 		PROD01 /* EchoText.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EchoText.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		RES010 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		RES011 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -242,6 +257,24 @@
 			name = FocusMode;
 			sourceTree = "<group>";
 		};
+		7C5B0E7CC9F27163DB297328 /* License */ = {
+			isa = PBXGroup;
+			children = (
+				4CBD5ED4AA2C9D01AB2B81F7 /* LicenseGateView.swift */,
+			);
+			name = License;
+			path = License;
+			sourceTree = "<group>";
+		};
+		FDBK020 /* Feedback */ = {
+			isa = PBXGroup;
+			children = (
+				FDBK010 /* FeedbackView.swift */,
+			);
+			name = Feedback;
+			path = Feedback;
+			sourceTree = "<group>";
+		};
 		89BCB0443BF602F3AAA77865 /* Meeting */ = {
 			isa = PBXGroup;
 			children = (
@@ -299,6 +332,7 @@
 				1CE8A864E76241706F6F8393 /* EchoTextDocument.swift */,
 				PRKEET10 /* TranscriptionEngine.swift */,
 				PRKEET11 /* ParakeetModel.swift */,
+				2DDAC70E2A2A1D0132B26961 /* LicenseModels.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -330,6 +364,10 @@
 				560C01A032D532AA412BC4A9 /* AudioChunkManager.swift */,
 				24AADF2993DA9BCFB20AB8D9 /* TranslationService.swift */,
 				AC07A3A2D047AC42C1FFE15B /* SystemAudioService.swift */,
+				0068E91D984466199C9A5095 /* LicenseService.swift */,
+				UPDT001 /* UpdateService.swift */,
+				TLMT001 /* TelemetryService.swift */,
+				FDBK001 /* FeedbackService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -362,6 +400,8 @@
 				7B9E7467F03F54D5A0E3EF9D /* FocusMode */,
 				03B041961771CA1EB78E4F4D /* History */,
 				89BCB0443BF602F3AAA77865 /* Meeting */,
+				7C5B0E7CC9F27163DB297328 /* License */,
+				FDBK020 /* Feedback */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -404,6 +444,7 @@
 				SRC071 /* GeneralSettingsTab.swift */,
 				SRC072 /* ModelSettingsTab.swift */,
 				SRC073 /* LanguageSettingsTab.swift */,
+				BDC18F9EB2B55FE786148494 /* LicenseSettingsView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -496,6 +537,8 @@
 				PKG001 /* WhisperKit */,
 				PKG002 /* KeyboardShortcuts */,
 				PKG003 /* FluidAudio */,
+				PKG004 /* Sparkle */,
+				PKG005 /* TelemetryDeck */,
 			);
 			productName = EchoText;
 			productReference = PROD01 /* EchoText.app */;
@@ -529,6 +572,8 @@
 				PKR001 /* XCRemoteSwiftPackageReference "WhisperKit" */,
 				PKR002 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
 				PKR003 /* XCRemoteSwiftPackageReference "FluidAudio" */,
+				PKR004 /* XCRemoteSwiftPackageReference "Sparkle" */,
+				PKR005 /* XCRemoteSwiftPackageReference "TelemetryDeck" */,
 			);
 			productRefGroup = GRP002 /* Products */;
 			projectDirPath = "";
@@ -650,6 +695,14 @@
 				PRKEET01 /* TranscriptionEngine.swift in Sources */,
 				PRKEET02 /* ParakeetModel.swift in Sources */,
 				PRKEET03 /* ParakeetService.swift in Sources */,
+				160F1DDC4F196CC15BE53CBE /* LicenseModels.swift in Sources */,
+				B59766E31C2E3D5C49B090FB /* LicenseService.swift in Sources */,
+				F047699959AB0C777CD06018 /* LicenseSettingsView.swift in Sources */,
+				B2F0EF8393980EE5D12C2C36 /* LicenseGateView.swift in Sources */,
+				UPDT002 /* UpdateService.swift in Sources */,
+				TLMT002 /* TelemetryService.swift in Sources */,
+				FDBK002 /* FeedbackService.swift in Sources */,
+				FDBK011 /* FeedbackView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -880,6 +933,22 @@
 				minimumVersion = 0.7.9;
 			};
 		};
+		PKR004 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.6.0;
+			};
+		};
+		PKR005 /* XCRemoteSwiftPackageReference "TelemetryDeck" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/TelemetryDeck/SwiftSDK";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -897,6 +966,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = PKR003 /* XCRemoteSwiftPackageReference "FluidAudio" */;
 			productName = FluidAudio;
+		};
+		PKG004 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = PKR004 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+		PKG005 /* TelemetryDeck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = PKR005 /* XCRemoteSwiftPackageReference "TelemetryDeck" */;
+			productName = TelemetryDeck;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

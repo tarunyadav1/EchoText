@@ -61,6 +61,46 @@ enum Constants {
         static let privacyURL = URL(string: "https://echotext.app/privacy")!
         static let termsURL = URL(string: "https://echotext.app/terms")!
         static let githubURL = URL(string: "https://github.com/echotext/echotext")!
+        static let gumroadURL = URL(string: "https://3422223166764.gumroad.com/l/wtomqy")!
+    }
+
+    // MARK: - Telemetry Configuration
+    enum Telemetry {
+        /// TelemetryDeck App ID
+        static let appID = "F08DE9FB-4EDC-4F8D-8F43-442F290A80C4"
+    }
+
+    // MARK: - Feedback Configuration
+    enum Feedback {
+        /// Feedback server URL (Cloudflare Worker)
+        static let serverURL = "https://echotext-feedback.tarunyadav9761.workers.dev"
+
+        /// Support email fallback
+        static let supportEmail = "support@echotext.app"
+    }
+
+    // MARK: - Update Configuration
+    enum Update {
+        /// Appcast URL for Sparkle updates (hosted on Cloudflare)
+        static let appcastURL = "https://echotext-updates.tarunyadav9761.workers.dev/appcast.xml"
+
+        /// Update check interval (1 day in seconds)
+        static let checkInterval: TimeInterval = 86400
+    }
+
+    // MARK: - License Configuration
+    enum License {
+        /// License server URL
+        static let serverURL = "https://echotext-license-server.tarunyadav9761.workers.dev"
+
+        /// Gumroad product ID
+        static let gumroadProductId = "wtomqy"
+
+        /// Grace period for offline usage (7 days)
+        static let offlineGracePeriod: TimeInterval = 7 * 24 * 60 * 60
+
+        /// Re-verification interval (1 day)
+        static let verificationInterval: TimeInterval = 24 * 60 * 60
     }
 
     // MARK: - Notification Names

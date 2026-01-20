@@ -1,0 +1,29 @@
+# EchoText License Server - Cloudflare Worker Configuration
+name = "echotext-license-server"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+# Account ID
+account_id = "9da0a3e2fbc6f382f556b4c4c622f6a3"
+
+# KV Namespace for license storage
+[[kv_namespaces]]
+binding = "LICENSE_KV"
+id = "f9f95febe2ba4bf89bf0831d6a100b00"
+
+# Secrets (set via wrangler secret or GitHub Secrets)
+# wrangler secret put GUMROAD_PRODUCT_ID
+
+# Optional: Custom domain (uncomment after adding domain to Cloudflare)
+# [[routes]]
+# pattern = "license.echotext.app/*"
+# zone_name = "echotext.app"
+
+# Development settings
+[dev]
+port = 8787
+local_protocol = "http"
+
+# Production environment
+[env.production]
+# Can override settings for production if needed
